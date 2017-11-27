@@ -5,6 +5,8 @@ from keras.optimizers import Adam
 from keras.callbacks import EarlyStopping
 from data_helpers import pass_filter, split_data, make_timeseries_instances, timeseries_shuffler
 from metrics_helper import do_the_thing
+import keras.backend as K
+
 
 def modified_mse(y_true, y_pred): #### modified MSE loss function for absolute yaw data (0-360 values wrap around)
     
