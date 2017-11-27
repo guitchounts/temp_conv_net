@@ -115,7 +115,7 @@ def determine_fit(X, y, y_key, nn_params, plot_result=True):
         custom_loss = 0
     else:
         custom_loss = 1
-        print 'Training on yaw, using custom loss function'
+        print('Training on yaw, using custom loss function')
 
 
     model, X_train, X_test, y_train, y_test = evaluate_timeseries(
