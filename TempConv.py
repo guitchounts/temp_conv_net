@@ -115,9 +115,10 @@ def determine_fit(X, y, y_key, nn_params, plot_result=True):
 
     if y_key[0].find('yaw') == -1:
         custom_loss = 0
+        print('Training on %s, using MSE as loss function' % y_key[0])
     else:
         custom_loss = 1
-        print('Training on yaw, using custom loss function')
+        print('Training on %s, using custom loss function' % y_key[0])
 
 
     model, X_train, X_test, y_train, y_test = evaluate_timeseries(

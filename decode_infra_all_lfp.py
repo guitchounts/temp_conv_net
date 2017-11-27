@@ -52,9 +52,7 @@ def run_decoding(lfp_path,head_path,nn_params):
     print('head_signals shape: ', head_signals.shape)
 
 
-    #dx = np.gradient(filter(signal.medfilt(np.unwrap(np.deg2rad(head_signals[:,6])),[21]),[1],filt_type='lowpass',fs=100.))
-    #dy = np.gradient(filter(signal.medfilt(head_signals[:,7],[21]),[1],filt_type='lowpass',fs=100.))
-    #dz = np.gradient(filter(signal.medfilt(head_signals[:,8],[21]),[1],filt_type='lowpass',fs=100.))
+    
     xyz = filter(np.sqrt(head_signals[:,0]**2 + head_signals[:,1]**2 + head_signals[:,2]**2     ),[1],filt_type='lowpass',fs=100.)
 
     dx_neg = np.empty(head_signals[:,3].shape)
@@ -125,7 +123,7 @@ if __name__ == "__main__":
         'lr' : 0.0005,
         'kernel' : 2,
         'nb_filter' : 5,
-        'window' : 100,
+        'window' : 60,
         'offset' : 10,
         'nb_test' : 1,
         'nb_trains' : 1,
