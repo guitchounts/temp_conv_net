@@ -13,22 +13,7 @@ from scipy import stats,signal
 
 # In[9]:
 
-nn_params = {
-    'bs' : 256,
-    'eps' : 15,
-    'lr' : 0.0005,
-    'kernel' : 2,
-    'nb_filter' : 5,
-    'window' : 100,
-    'offset' : 10,
-    'nb_test' : 1,
-    'nb_trains' : 1,
-    'verbose' : False,
-    'id' : 3
-}
 
-lfp_path = sys.argv[1]
-head_path = sys.argv[2]
 
 def filter(ephys,freq_range,filt_order = 4,filt_type='bandpass',fs=10.):
     
@@ -39,94 +24,116 @@ def filter(ephys,freq_range,filt_order = 4,filt_type='bandpass',fs=10.):
     filtered_trace = signal.filtfilt(b,a,ephys,axis=0)
     return filtered_trace
 
-# In[4]:
+def run_decoding(lfp_path,head_path,nn_params):
 
-## get and format data
-lfp_file = h5py.File(lfp_path, 'r')
-print('lfp_file keys:',lfp_file.keys())
-data_name = list(lfp_file.keys())[0]
-neural_data = np.asarray(lfp_file[data_name]) # iterate through powerbands
-print('Shape of neural data, as loaded: ', neural_data.shape)
-if neural_data.shape[0] > neural_data.shape[1]:
-    neural_data = neural_data.T
-
-
-##### shuffle control:  neural_data = np.random.permutation(neural_data.T).T
-
-tetrodes = grouper(neural_data, neural_data.shape[0])
+    ## get and format data
+    lfp_file = h5py.File(lfp_path, 'r')
+    print('lfp_file keys:',lfp_file.keys())
+    data_name = list(lfp_file.keys())[0]
+    neural_data = np.asarray(lfp_file[data_name]) # iterate through powerbands
+    print('Shape of neural data, as loaded: ', neural_data.shape)
+    if neural_data.shape[0] > neural_data.shape[1]:
+        neural_data = neural_data.T
 
 
-### bad electrode control?
-### tetrodes = tetrodes[:,144:162,:]
+    ##### shuffle control:  neural_data = np.random.permutation(neural_data.T).T
 
-print(tetrodes.shape)
-
-head_signals_h5 = h5py.File(head_path, 'r')
-idx_start, idx_stop = [0,9]
-head_signals = np.asarray([np.asarray(head_signals_h5[key]) for key in head_signals_h5.keys()][0:9]).T[:,idx_start:idx_stop]
-print('head_signals shape: ', head_signals.shape)
+    tetrodes = grouper(neural_data, neural_data.shape[0])
 
 
-#dx = np.gradient(filter(signal.medfilt(np.unwrap(np.deg2rad(head_signals[:,6])),[21]),[1],filt_type='lowpass',fs=100.))
-#dy = np.gradient(filter(signal.medfilt(head_signals[:,7],[21]),[1],filt_type='lowpass',fs=100.))
-#dz = np.gradient(filter(signal.medfilt(head_signals[:,8],[21]),[1],filt_type='lowpass',fs=100.))
-xyz = filter(np.sqrt(head_signals[:,0]**2 + head_signals[:,1]**2 + head_signals[:,2]**2     ),[1],filt_type='lowpass',fs=100.)
+    ### bad electrode control?
+    ### tetrodes = tetrodes[:,144:162,:]
 
-dx_neg = np.empty(head_signals[:,3].shape)
-dx_pos = np.empty(head_signals[:,3].shape)
-dx = head_signals[:,3]
-dx_neg[np.where(dx < 0)[0]] = dx[np.where(dx < 0)[0]]
+    print(tetrodes.shape)
 
-dx_pos[np.where(dx > 0)[0]] = dx[np.where(dx > 0)[0]]
+    head_signals_h5 = h5py.File(head_path, 'r')
+    idx_start, idx_stop = [0,9]
+    head_signals = np.asarray([np.asarray(head_signals_h5[key]) for key in head_signals_h5.keys()][0:9]).T[:,idx_start:idx_stop]
+    print('head_signals shape: ', head_signals.shape)
 
 
-head_signals = np.vstack([head_signals[:,6],head_signals[:,7],head_signals[:,8]]).T
-#head_signals = np.vstack([dx_neg**2,dx_pos**2]).T
-#head_signals_int = ['left','right']
+    #dx = np.gradient(filter(signal.medfilt(np.unwrap(np.deg2rad(head_signals[:,6])),[21]),[1],filt_type='lowpass',fs=100.))
+    #dy = np.gradient(filter(signal.medfilt(head_signals[:,7],[21]),[1],filt_type='lowpass',fs=100.))
+    #dz = np.gradient(filter(signal.medfilt(head_signals[:,8],[21]),[1],filt_type='lowpass',fs=100.))
+    xyz = filter(np.sqrt(head_signals[:,0]**2 + head_signals[:,1]**2 + head_signals[:,2]**2     ),[1],filt_type='lowpass',fs=100.)
+
+    dx_neg = np.empty(head_signals[:,3].shape)
+    dx_pos = np.empty(head_signals[:,3].shape)
+    dx = head_signals[:,3]
+    dx_neg[np.where(dx < 0)[0]] = dx[np.where(dx < 0)[0]]
+
+    dx_pos[np.where(dx > 0)[0]] = dx[np.where(dx > 0)[0]]
+
+
+    head_signals = np.vstack([head_signals[:,6],head_signals[:,7],head_signals[:,8]]).T
+    #head_signals = np.vstack([dx_neg**2,dx_pos**2]).T
+    #head_signals_int = ['left','right']
 
 
 
-head_signals_keys = list(head_signals_h5.keys())[0:9][idx_start:idx_stop]
-head_signals_int = ['yaw_abs', 'roll_abs', 'pitch_abs']
-print('head_signals_keys intuitive: ', head_signals_int)
+    head_signals_keys = list(head_signals_h5.keys())[0:9][idx_start:idx_stop]
+    head_signals_int = ['yaw_abs', 'roll_abs', 'pitch_abs']
+    print('head_signals_keys intuitive: ', head_signals_int)
 
-## limit signals to 1e6 samples:
-if neural_data.shape[1] > 1000000:
-    print('Reducing Data Size Down to 1,000,000 Samples')
-    tetrodes  = tetrodes[:,:,0:int(1e6)]
-    head_signals = head_signals[0:int(1e6),:]
-    
-print('The SHAPE of tetrodes and head_signals = ', tetrodes.shape,head_signals.shape)
-# In[10]:
-
-stats = {}
-
-
-# In[12]:
-
-# iterate Xs
-for tetrode_idx in range(tetrodes.shape[0]):
-    tetrode = tetrodes[tetrode_idx].T
-    
-    #if tetrode_idx >= 1: break
-    
-    # iterate ys
-    for head_signal_idx in range(head_signals.shape[1]):
-        R2r_arr = {
-            'R2s' : [],
-            'rs' : []
-        }
+    ## limit signals to 1e6 samples:
+    if neural_data.shape[1] > 1000000:
+        print('Reducing Data Size Down to 1,000,000 Samples')
+        tetrodes  = tetrodes[:,:,0:int(1e6)]
+        head_signals = head_signals[0:int(1e6),:]
         
-        for i in range(nn_params['nb_trains']): # replace with k-fold? n k-folds?
-            head_signal = head_signals[:,head_signal_idx]
-            R2, r = determine_fit(tetrode, head_signal, [head_signals_int[head_signal_idx]], nn_params)
+    print('The SHAPE of tetrodes and head_signals = ', tetrodes.shape,head_signals.shape)
+    # In[10]:
+
+    stats = {}
+
+
+    # In[12]:
+
+    # iterate Xs
+    for tetrode_idx in range(tetrodes.shape[0]):
+        tetrode = tetrodes[tetrode_idx].T
+        
+        #if tetrode_idx >= 1: break
+        
+        # iterate ys
+        for head_signal_idx in range(head_signals.shape[1]):
+            R2r_arr = {
+                'R2s' : [],
+                'rs' : []
+            }
             
-            R2r_arr['R2s'].append(R2[0])
-            R2r_arr['rs'].append(r[0])
-        
-        stats['tetrode_{}_head_signal_{}'.format(tetrode_idx, head_signal_idx)] = R2r_arr
+            for i in range(nn_params['nb_trains']): # replace with k-fold? n k-folds?
+                head_signal = head_signals[:,head_signal_idx]
+                R2, r = determine_fit(tetrode, head_signal, [head_signals_int[head_signal_idx]], nn_params)
+                
+                R2r_arr['R2s'].append(R2[0])
+                R2r_arr['rs'].append(r[0])
+            
+            stats['tetrode_{}_head_signal_{}'.format(tetrode_idx, head_signal_idx)] = R2r_arr
 
 
-# In[ ]:
+    # In[ ]:
 
-print(stats)
+    print(stats)
+
+
+if __name__ == "__main__":
+
+    nn_params = {
+        'bs' : 256,
+        'eps' : 15,
+        'lr' : 0.0005,
+        'kernel' : 2,
+        'nb_filter' : 5,
+        'window' : 100,
+        'offset' : 10,
+        'nb_test' : 1,
+        'nb_trains' : 1,
+        'verbose' : False,
+        'id' : 3
+    }
+
+    lfp_path = sys.argv[1]
+    head_path = sys.argv[2]
+
+    run_decoding(lfp_path,head_path,nn_params)

@@ -6,7 +6,19 @@ from keras.callbacks import EarlyStopping
 from data_helpers import pass_filter, split_data, make_timeseries_instances, timeseries_shuffler
 from metrics_helper import do_the_thing
 
-def make_timeseries_regressor(nn_params, nb_input_series=1, nb_outputs=1):
+def modified_mse(y_true, y_pred): #### modified MSE loss function for absolute yaw data (0-360 values wrap around)
+    
+
+    #y_true = y_true * y_std + y_mean ### y_train_mean,y_train_std are GLOBALS ??? 
+    #y_pred = y_pred * y_std + y_mean
+
+    mod_square =  K.square(K.abs(y_pred - y_true) - 360) ### hack 2.1 = (360 - np.mean(ox)) / np.std(ox) 2.1086953197291871
+    raw_square =  K.square(y_pred - y_true)
+    better = K.minimum(mod_square,raw_square)
+    return K.mean(better,axis=-1)
+
+
+def make_timeseries_regressor(nn_params, nb_input_series=1, nb_outputs=1,custom_loss=0):
     model = Sequential()
     #model.add(Conv1D(
     #    int(nn_params['nb_filter']*8), 
@@ -41,12 +53,16 @@ def make_timeseries_regressor(nn_params, nb_input_series=1, nb_outputs=1):
     
     adam = Adam(lr=nn_params['lr'], beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
     
-    model.compile(loss='mae', optimizer=adam, metrics=['mse'])
+    if custom_loss == 0:
+        model.compile(loss='mae', optimizer=adam, metrics=['mse'])
+    else:
+        model.compile(loss=modified_mse(), optimizer=adam, metrics=['mse'])
+
     # To perform (binary) classification instead:
     # model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'])
     return model
 
-def evaluate_timeseries(timeseries1, timeseries2, nn_params):
+def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
     nb_samples, nb_series = timeseries1.shape
     
     if timeseries2.ndim == 1:
@@ -64,7 +80,8 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params):
     model = make_timeseries_regressor(
         nn_params,
         nb_input_series=nb_series, 
-        nb_outputs=nb_out_series
+        nb_outputs=nb_out_series,
+        custom_loss=custom_loss
     )
     
     if nn_params['verbose']: 
@@ -93,10 +110,19 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params):
     return model, X_train, X_test, y_train, y_test
 
 def determine_fit(X, y, y_key, nn_params, plot_result=True):
+
+    if y_key.find('yaw') == -1:
+        custom_loss = 0
+    else:
+        custom_loss = 1
+        print 'Training on yaw, using custom loss function'
+
+
     model, X_train, X_test, y_train, y_test = evaluate_timeseries(
         X, 
         y, 
-        nn_params
+        nn_params,
+        custom_loss
     )
     
     y_test_hat = model.predict(X_test)
