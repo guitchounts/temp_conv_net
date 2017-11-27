@@ -56,7 +56,7 @@ def make_timeseries_regressor(nn_params, nb_input_series=1, nb_outputs=1,custom_
     if custom_loss == 0:
         model.compile(loss='mae', optimizer=adam, metrics=['mse'])
     else:
-        model.compile(loss=modified_mse(), optimizer=adam, metrics=['mse'])
+        model.compile(loss=modified_mse, optimizer=adam, metrics=['mse'])
 
     # To perform (binary) classification instead:
     # model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'])
