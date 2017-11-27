@@ -111,7 +111,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
 
 def determine_fit(X, y, y_key, nn_params, plot_result=True):
 
-    if y_key.find('yaw') == -1:
+    if y_key[0].find('yaw') == -1:
         custom_loss = 0
     else:
         custom_loss = 1
