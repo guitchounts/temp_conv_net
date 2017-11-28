@@ -63,11 +63,11 @@ def run_decoding(lfp_path,head_path,nn_params):
     dx_pos[np.where(dx > 0)[0]] = dx[np.where(dx > 0)[0]]
 
 
-    filt_unwrapped_yaw = filter(np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,6]))),[1.],fs=100.,filt_type='lowpass')
+    filt_unwrapped_yaw = filter(np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,6]))),[1.],fs=10.,filt_type='lowpass')
     lowpass_dx = np.gradient(filt_unwrapped_yaw)
 
-    filt_roll = filter(head_signals[:,7],[1.],fs=100.,filt_type='lowpass')
-    filt_pitch = filter(head_signals[:,8],[1.],fs=100.,filt_type='lowpass')
+    filt_roll = filter(head_signals[:,7],[1.],fs=10.,filt_type='lowpass')
+    filt_pitch = filter(head_signals[:,8],[1.],fs=10.,filt_type='lowpass')
 
     lowpass_dy = np.gradient(filt_roll)
     lowpass_dz = np.gradient(filt_pitch)
