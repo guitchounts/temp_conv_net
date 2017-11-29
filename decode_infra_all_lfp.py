@@ -35,7 +35,7 @@ def run_decoding(lfp_path,head_path,nn_params):
     if neural_data.shape[0] > neural_data.shape[1]:
         neural_data = neural_data.T
 
-
+    fs = 100.
     ##### shuffle control:  neural_data = np.random.permutation(neural_data.T).T
 
     tetrodes = grouper(neural_data, neural_data.shape[0])
@@ -53,7 +53,7 @@ def run_decoding(lfp_path,head_path,nn_params):
 
 
     
-    xyz = filter(np.sqrt(head_signals[:,0]**2 + head_signals[:,1]**2 + head_signals[:,2]**2     ),[1],filt_type='lowpass',fs=100.)
+    xyz = filter(np.sqrt(head_signals[:,0]**2 + head_signals[:,1]**2 + head_signals[:,2]**2     ),[1],filt_type='lowpass',fs=fs)
 
     dx_neg = np.empty(head_signals[:,3].shape)
     dx_pos = np.empty(head_signals[:,3].shape)
@@ -63,11 +63,11 @@ def run_decoding(lfp_path,head_path,nn_params):
     dx_pos[np.where(dx > 0)[0]] = dx[np.where(dx > 0)[0]]
 
 
-    filt_unwrapped_yaw = filter(np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,6]))),[1.],fs=10.,filt_type='lowpass')
+    filt_unwrapped_yaw = filter(np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,6]))),[1.],fs=fs,filt_type='lowpass')
     lowpass_dx = np.gradient(filt_unwrapped_yaw)
 
-    filt_roll = filter(head_signals[:,7],[1.],fs=10.,filt_type='lowpass')
-    filt_pitch = filter(head_signals[:,8],[1.],fs=10.,filt_type='lowpass')
+    filt_roll = filter(head_signals[:,7],[1.],fs=fs,filt_type='lowpass')
+    filt_pitch = filter(head_signals[:,8],[1.],fs=fs,filt_type='lowpass')
 
     lowpass_dy = np.gradient(filt_roll)
     lowpass_dz = np.gradient(filt_pitch)
