@@ -80,7 +80,7 @@ def run_decoding(lfp_path,head_path,nn_params):
 
     head_signals_keys = list(head_signals_h5.keys())[0:9][idx_start:idx_stop]
     #head_signals_int = ['yaw_abs', 'roll_abs', 'pitch_abs']
-    head_signals_int = ['dyaw', 'droll', 'dpitch']
+    head_signals_int = ['dyaaw', 'droll', 'dpitch']
 
     print('head_signals_keys intuitive: ', head_signals_int)
 
