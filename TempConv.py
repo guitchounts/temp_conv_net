@@ -17,7 +17,7 @@ def modified_mse(y_true, y_pred): #### modified MSE loss function for absolute y
     mod_square =  K.square(K.abs(y_pred - y_true) - 360) ### hack 2.1 = (360 - np.mean(ox)) / np.std(ox) 2.1086953197291871
     raw_square =  K.square(y_pred - y_true)
     better = K.minimum(mod_square,raw_square)
-    return K.mean(better,axis=-1)
+    return K.mean(better,axis= -1)
 
 
 def make_timeseries_regressor(nn_params, nb_input_series=1, nb_outputs=1,custom_loss=0):
@@ -73,6 +73,17 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
     nb_out_samples, nb_out_series = timeseries2.shape
     print('THE SHAPES OF timeseries1, timeseries2 ==== ',timeseries1.shape, timeseries2.shape)    
     X, y = make_timeseries_instances(timeseries1, timeseries2, nn_params['window'], nn_params['offset'])
+
+    print('###################### getting non-zero values ######################')
+    non_zeros = np.where(abs(y) >= 0.5 )[0]
+    print(y.shape)
+    print(X.shape)
+    y = y[non_zeros,:]
+    
+    X = X[non_zeros,:,:]
+    print(y.shape)
+    print(X.shape)
+
     X, y = timeseries_shuffler(X, y, 3000, 25)
     
     if nn_params['verbose']: 
