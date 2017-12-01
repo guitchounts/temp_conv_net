@@ -73,14 +73,14 @@ def run_decoding(lfp_path,head_path,nn_params):
     lowpass_dz = np.gradient(filt_pitch)
 
     #head_signals = np.vstack([head_signals[:,6],head_signals[:,7],head_signals[:,8]]).T
-    head_signals = np.vstack([lowpass_dx,lowpass_dy,lowpass_dz]).T
+    head_signals = np.vstack([lowpass_dx]).T
     #head_signals_int = ['left','right']
 
 
 
     head_signals_keys = list(head_signals_h5.keys())[0:9][idx_start:idx_stop]
     #head_signals_int = ['yaw_abs', 'roll_abs', 'pitch_abs']
-    head_signals_int = ['dyaaw', 'droll', 'dpitch']
+    head_signals_int = ['dyaaw']
 
     print('head_signals_keys intuitive: ', head_signals_int)
 
