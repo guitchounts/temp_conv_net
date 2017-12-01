@@ -106,8 +106,8 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
     early_stopping = EarlyStopping(
         monitor='val_loss', 
         min_delta=0, 
-        patience=1, 
-        verbose=0, 
+        patience=2, 
+        verbose=1, 
         mode='auto'
     )
 
