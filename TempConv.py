@@ -78,9 +78,9 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
     non_zeros = np.where(abs(y) >= 0.25 )[0]
     print(y.shape)
     print(X.shape)
-    y = y[non_zeros,:]
+    #y = y[non_zeros,:]
     
-    X = X[non_zeros,:,:]
+    #X = X[non_zeros,:,:]
     print(y.shape)
     print(X.shape)
 
