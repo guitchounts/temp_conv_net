@@ -51,17 +51,17 @@ def make_timeseries_regressor(nn_params, nb_input_series=1, nb_outputs=1,custom_
     model.add(Flatten())
     model.add(Dense(nn_params['nb_filter']*8, activation='relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(nb_outputs, activation='tanh')) ## was linear   # For binary classification, change the activation to 'sigmoid'
+    model.add(Dense(nb_outputs, activation='linear')) ## was linear   # For binary classification, change the activation to 'sigmoid'
     
     adam = Adam(lr=nn_params['lr'], beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
     
-    if custom_loss == 0:
-        model.compile(loss='mae', optimizer=adam, metrics=['mse'])
-    else:
-        model.compile(loss=modified_mse, optimizer=adam, metrics=['mse'])
+    #if custom_loss == 0:
+    #    model.compile(loss='mae', optimizer=adam, metrics=['mse'])
+    #else:
+    #    model.compile(loss=modified_mse, optimizer=adam, metrics=['mse'])
 
     # To perform (binary) classification instead:
-    # model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'])
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'])
     return model
 
 def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
@@ -75,12 +75,19 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
     X, y = make_timeseries_instances(timeseries1, timeseries2, nn_params['window'], nn_params['offset'])
 
     print('###################### getting non-zero values ######################')
-    non_zeros = np.where(y > 0 )[0]
+    non_zeros = np.where(abs(y) > 0.25 )[0]
+    pos = np.where(y > 0)[0]
+    neg = np.where(y < 0)[0]
+
     print(y.shape)
     print(X.shape)
     #y = y[non_zeros,:]
-    y = (y - np.mean(y)) / np.std(y)
-    #X = X[non_zeros,:,:]
+
+    y[neg] = -1
+    y[pos] = 1
+
+    #y = (y - np.mean(y)) / np.std(y)
+    X = X[non_zeros,:,:]
     print(y.shape)
     print(X.shape)
 
