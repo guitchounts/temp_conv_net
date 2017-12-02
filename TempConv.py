@@ -51,7 +51,7 @@ def make_timeseries_regressor(nn_params, nb_input_series=1, nb_outputs=1,custom_
     model.add(Flatten())
     model.add(Dense(nn_params['nb_filter']*8, activation='relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(nb_outputs, activation='sigmoid')) ## was linear   # For binary classification, change the activation to 'sigmoid'
+    model.add(Dense(nb_outputs, activation='tanh')) ## was linear   # For binary classification, change the activation to 'sigmoid'
     
     adam = Adam(lr=nn_params['lr'], beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
     
