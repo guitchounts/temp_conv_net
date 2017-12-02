@@ -75,7 +75,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
     X, y = make_timeseries_instances(timeseries1, timeseries2, nn_params['window'], nn_params['offset'])
 
     print('###################### getting non-zero values ######################')
-    non_zeros = np.where(abs(y) >= 0.5 )[0]
+    non_zeros = np.where(abs(y) >= 0.25 )[0]
     print(y.shape)
     print(X.shape)
     y = y[non_zeros,:]
