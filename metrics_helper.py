@@ -33,9 +33,9 @@ def plot_results(y_valids, y_hats, y_names, R2s, rs, model_name='GRU'):
 
         axarr = [ax1,ax2,ax3]
 
-        axarr[0].plot(y_valid,linewidth=0.3,c='black')
+        axarr[0].plot(y_valid,linewidth=0.2,c='black')
         axarr[0].set_ylabel(y_names[i])
-        axarr[0].plot(y_valid_predicted,linewidth=0.3,color='red')
+        axarr[0].plot(y_valid_predicted,linewidth=0.2,color='red')
         axarr[0].set_title('R^2 = %f. r = %f' % (R2s[i],rs[i]),fontsize= 12)
 
         axarr[1].scatter(y_valid,y_valid_predicted,alpha=0.05,s=2,marker='o')
