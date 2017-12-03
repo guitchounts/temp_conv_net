@@ -46,6 +46,8 @@ def get_turn_idx(dx):
     turns[right > thresh] = -1
 
     x =np.where(np.diff(turns) )[0]
+    if np.mod(x.shape[0],2) == 1:
+        x = x[:-1]
     print('here are some xs (turn starts and stops): ', x[0:10])
 
     turn_starts = x[0::2]
