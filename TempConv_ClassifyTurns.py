@@ -118,32 +118,36 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
 
     win_half = int(nn_params['window']/2)
 
-    left_mask = np.zeros(timeseries1.shape[0],dtype=bool)
-    right_mask = np.zeros(timeseries1.shape[0],dtype=bool)
+    # left_mask = np.zeros(timeseries1.shape[0],dtype=bool)
+    # right_mask = np.zeros(timeseries1.shape[0],dtype=bool)
 
-    for idx in range(len(left_starts)):
-        left_mask[left_starts[idx]- win_half: left_starts[idx]+win_half ] = 1
-    for idx in range(len(right_starts)):
-        right_mask[right_starts[idx]- win_half: right_starts[idx]+win_half ] = 1
+    # for idx in range(len(left_starts)):
+    #     left_mask[left_starts[idx]- win_half: left_starts[idx]+win_half ] = 1
+    # for idx in range(len(right_starts)):
+    #     right_mask[right_starts[idx]- win_half: right_starts[idx]+win_half ] = 1
 
 
-    left_X = timeseries1[left_mask,:]
-    right_X = timeseries1[right_mask,:]
-    X_turns = np.concatenate([left_X,right_X],axis=0)
-    print('X_turns.shape = ', X_turns.shape)
-    print('turn_labels.shape = ', turn_labels.shape)
-    turn_labels
+    #left_X = timeseries1[left_mask,:]
+    #right_X = timeseries1[right_mask,:]
+    #X_turns = np.concatenate([left_X,right_X],axis=0)
+    
 
     nb_out_samples, nb_out_series = timeseries2.shape
 
     print('THE SHAPES OF timeseries1, timeseries2 ==== ',timeseries1.shape, timeseries2.shape)    
-    X, y = make_timeseries_instances(X_turns, turn_labels, nn_params['window'], nn_params['offset'])
-
-    print('###################### getting non-zero values ######################')
+    #X, y = make_timeseries_instances(timeseries1, timeseries2, nn_params['window'], nn_params['offset'])
+    X = get_spikes_with_history(timeseries1,win_half,win_half)
+    y = turn_labels
+    #print('###################### getting non-zero values ######################')
     
     print(y.shape)
     print(X.shape)
 
+    left_X = X[left_starts,:,:]
+    right_X = X[right_starts,:,:]
+    X_turns = np.concatenate([left_X,right_X],axis=0)
+    print('X_turns.shape = ', X_turns.shape)
+    print('turn_labels.shape = ', turn_labels.shape)
     
     # non_zeros = np.where(abs(y) > 0.25 )[0]    
     
