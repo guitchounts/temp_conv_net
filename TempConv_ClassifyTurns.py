@@ -21,7 +21,7 @@ def modified_mse(y_true, y_pred): #### modified MSE loss function for absolute y
     return K.mean(better,axis= -1)
 
 def get_turn_idx(dx):
-    
+    print('dx.shape = ', dx.shape)
     dx_neg = np.zeros(dx.shape)
     dx_pos = np.zeros(dx.shape)
 
@@ -30,23 +30,28 @@ def get_turn_idx(dx):
 
     left = dx_pos**2
     right = dx_neg**2
-
+    print('here are some left, right turns: ', left[0:5],right[0:5])
     turns = np.zeros(dx.shape)
 
-    turns[left > 1] = 1
+    thresh = 1
 
-    turns[right > 1] = -1
+    turns[left > thresh] = 1
+
+    turns[right > thresh] = -1
 
     x =np.where(np.diff(turns) )[0]
+    print('here are some xs (turn starts and stops): ', x[0:10])
 
     turn_starts = x[0::2]
     turn_stops = x[1::2]
 
-    left_starts = turn_starts[turns[turn_stops]==1]
+    left_starts = turn_starts[turns[turn_stops]== 1]
 
-    right_starts = turn_starts[turns[turn_stops]==-1]
+    right_starts = turn_starts[turns[turn_stops]== -1]
 
-    return turns,left_starts,right_starts
+    labels = np.hstack([  np.ones(left_starts.shape[0]), -1*np.ones(right_starts.shape[0])         ])
+
+    return labels,left_starts,right_starts
 
 
 def make_timeseries_regressor(nn_params, nb_input_series=1, nb_outputs=1,custom_loss=0):
