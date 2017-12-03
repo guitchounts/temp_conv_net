@@ -94,7 +94,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
     print(y.shape)
     print(X.shape)
 
-    X, y = timeseries_shuffler(X, y, 3000, 25)
+    #X, y = timeseries_shuffler(X, y, 3000, 25)
     
     if nn_params['verbose']: 
         print('\n\nTimeseries ({} samples by {} series):\n'.format(nb_samples, nb_series))
