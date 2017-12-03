@@ -22,6 +22,7 @@ def modified_mse(y_true, y_pred): #### modified MSE loss function for absolute y
 
 def get_turn_idx(dx):
     print('dx.shape = ', dx.shape)
+    print('dx max = ', np.max(dx))
     dx_neg = np.zeros(dx.shape)
     dx_pos = np.zeros(dx.shape)
 
@@ -33,7 +34,7 @@ def get_turn_idx(dx):
     print('here are some left, right turns: ', left[0:5],right[0:5])
     turns = np.zeros(dx.shape)
 
-    thresh = 1
+    thresh = 0.25
 
     turns[left > thresh] = 1
 
