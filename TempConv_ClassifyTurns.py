@@ -21,6 +21,15 @@ def modified_mse(y_true, y_pred): #### modified MSE loss function for absolute y
     return K.mean(better,axis= -1)
 
 def get_turn_idx(dx):
+    
+    dx_neg = np.zeros(dx.shape)
+    dx_pos = np.zeros(dx.shape)
+
+    dx_neg[dx < 0] = dx[dx < 0]
+    dx_pos[dx > 0] = dx[dx > 0]
+
+    left = dx_pos**2
+    right = dx_neg**2
 
     turns = np.zeros(dx.shape)
 
