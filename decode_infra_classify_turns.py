@@ -8,7 +8,7 @@ import h5py
 import numpy as np
 import pandas as pd
 from data_helpers import grouper
-from TempConv import determine_fit
+from TempConv_ClassifyTurns import determine_class
 from scipy import stats,signal
 
 # In[9]:

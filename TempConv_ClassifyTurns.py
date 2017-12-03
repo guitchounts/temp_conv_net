@@ -7,6 +7,7 @@ from data_helpers import pass_filter, split_data, make_timeseries_instances, tim
 from metrics_helper import do_the_thing
 import keras.backend as K
 from sklearn.preprocessing import Normalizer
+from sklearn.model_selection import train_test_split
 
 def modified_mse(y_true, y_pred): #### modified MSE loss function for absolute yaw data (0-360 values wrap around)
     
@@ -36,7 +37,7 @@ def get_turn_idx(dx):
 
     right_starts = turn_starts[turns[turn_stops]==-1]
 
-    return left_starts,right_starts
+    return turns,left_starts,right_starts
 
 
 def make_timeseries_regressor(nn_params, nb_input_series=1, nb_outputs=1,custom_loss=0):
@@ -90,7 +91,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
         timeseries2 = np.atleast_2d(timeseries2).T
     
 
-    left_starts,right_starts = get_turn_idx(head_signals)
+    turn_labels,left_starts,right_starts = get_turn_idx(head_signals)
 
 
 
@@ -106,6 +107,10 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
     print(X.shape)
 
 
+    left_X = X[left_starts-nn_params['window']/2 : left_starts+nn_params['window']/2 ,:,:]
+    right_X = X[right_starts-nn_params['window']/2 : right_starts+nn_params['window']/2 ,:,:]
+    X_turns = np.concatenate(left_X,right_X,axis=0)
+
     # non_zeros = np.where(abs(y) > 0.25 )[0]    
     
     # y = y[non_zeros,:]
@@ -120,7 +125,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
     print(y.shape)
     print(X.shape)
 
-    X, y = timeseries_shuffler(X, y, 3000, 25)
+    #X, y = timeseries_shuffler(X, y, 3000, 25)
     
     if nn_params['verbose']: 
         print('\n\nTimeseries ({} samples by {} series):\n'.format(nb_samples, nb_series))
@@ -137,7 +142,8 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
         print('\n\nModel with input size {}, output size {}, {} conv filters of length {}'.format(model.input_shape, model.output_shape))
         model.summary()
     
-    X_train, X_test, y_train, y_test = split_data(X, y, 0.5)
+    #X_train, X_test, y_train, y_test = split_data(X, y, 0.5)
+    X_train, X_test, y_train, y_test = train_test_split(X_turns,turn_labels,test_size=0.5,random_state=42)
     
     early_stopping = EarlyStopping(
         monitor='val_loss', 
@@ -158,7 +164,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
 
     return model, X_train, X_test, y_train, y_test
 
-def determine_fit(X, y, y_key, nn_params, plot_result=True):
+def determine_class(X, y, y_key, nn_params, plot_result=True):
 
     if y_key[0].find('yaw') == -1:
         custom_loss = 0
