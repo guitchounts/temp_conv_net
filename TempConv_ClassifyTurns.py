@@ -142,7 +142,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
 
     left_X = X[left_mask,:,:]
     right_X = X[right_mask,:,:]
-    X_turns = np.concatenate(left_X,right_X,axis=0)
+    X_turns = np.concatenate([left_X,right_X],axis=0)
     print('X_turns.shape = ', X_turns.shape)
     # non_zeros = np.where(abs(y) > 0.25 )[0]    
     
