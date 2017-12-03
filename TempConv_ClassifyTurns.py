@@ -50,7 +50,7 @@ def get_turn_idx(dx):
 
     turn_starts = x[0::2]
     turn_stops = x[1::2]
-    print('turn_starts.shape,turn_stops,shape = ', turn_starts.shape,turn_stops,shape)
+    print('turn_starts.shape,turn_stops,shape = ', turn_starts.shape,turn_stops.shape)
 
     left_starts = turn_starts[turns[turn_stops]== 1]
 
