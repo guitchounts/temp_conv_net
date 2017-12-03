@@ -21,6 +21,7 @@ def modified_mse(y_true, y_pred): #### modified MSE loss function for absolute y
     return K.mean(better,axis= -1)
 
 def get_turn_idx(dx):
+    dx = np.squeeze(dx)
     print('dx.shape = ', dx.shape)
     print('dx max = ', np.max(dx))
 
