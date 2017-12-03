@@ -129,11 +129,11 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
     print(y.shape)
     print(X.shape)
 
-
-    left_X = X[left_starts-nn_params['window']/2 : left_starts+nn_params['window']/2 ,:,:]
-    right_X = X[right_starts-nn_params['window']/2 : right_starts+nn_params['window']/2 ,:,:]
+    win_half = int(nn_params['window']/2)
+    left_X = X[left_starts- win_half: left_starts+win_half ,:,:]
+    right_X = X[right_starts-win_half : right_starts+win_half ,:,:]
     X_turns = np.concatenate(left_X,right_X,axis=0)
-
+    print('X_turns.shape = ', X_turns.shape)
     # non_zeros = np.where(abs(y) > 0.25 )[0]    
     
     # y = y[non_zeros,:]
