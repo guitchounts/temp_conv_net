@@ -115,7 +115,7 @@ def run_decoding(lfp_path,head_path,nn_params):
             
             for i in range(nn_params['nb_trains']): # replace with k-fold? n k-folds?
                 head_signal = head_signals[:,head_signal_idx]
-                R2, r = determine_fit(tetrode, head_signal, [head_signals_int[head_signal_idx]], nn_params,)
+                R2, r = determine_class(tetrode, head_signal, [head_signals_int[head_signal_idx]], nn_params,)
                 
                 R2r_arr['R2s'].append(R2[0])
                 R2r_arr['rs'].append(r[0])
