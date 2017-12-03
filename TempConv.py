@@ -76,18 +76,21 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
 
     print('###################### getting non-zero values ######################')
     non_zeros = np.where(abs(y) > 0.25 )[0]
-    pos = np.where(y > 0)[0]
-    neg = np.where(y < 0)[0]
+    
 
     print(y.shape)
     print(X.shape)
-    #y = y[non_zeros,:]
 
-    #y[neg] = -1
-    #y[pos] = 1
-    y = Normalizer(norm='l2').fit_transform(np.atleast_2d(y))
+    y = y[non_zeros,:]
+    X = X[non_zeros,:,:]
+    
+    pos = np.where(y > 0)[0]
+    neg = np.where(y < 0)[0]
+    y[neg] = -1
+    y[pos] = 1
+    #y = Normalizer(norm='l2').fit_transform(np.atleast_2d(y))
     #y = (y - np.mean(y)) / np.std(y)
-    #X = X[non_zeros,:,:]
+    
     print(y.shape)
     print(X.shape)
 
