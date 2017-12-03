@@ -118,8 +118,8 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
 
     win_half = int(nn_params['window']/2)
 
-    left_mask = np.zeros(X.shape[0],dtype=bool)
-    right_mask = np.zeros(X.shape[0],dtype=bool)
+    left_mask = np.zeros(timeseries1.shape[0],dtype=bool)
+    right_mask = np.zeros(timeseries1.shape[0],dtype=bool)
 
     for idx in range(len(left_starts)):
         left_mask[left_starts[idx]- win_half: left_starts[idx]+win_half ] = 1
