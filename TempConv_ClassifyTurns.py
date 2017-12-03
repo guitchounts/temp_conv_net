@@ -91,7 +91,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
         timeseries2 = np.atleast_2d(timeseries2).T
     
 
-    turn_labels,left_starts,right_starts = get_turn_idx(head_signals)
+    turn_labels,left_starts,right_starts = get_turn_idx(timeseries2)
 
 
 
