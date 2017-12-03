@@ -38,7 +38,7 @@ def get_turn_idx(dx):
     right = dx_neg**2
     print('here are some left, right turns: ', left[0:5],right[0:5])
     turns = np.zeros(dx.shape)
-
+    print('turns shape = ', turns.shape)
     thresh = 0.25
 
     turns[left > thresh] = 1
@@ -50,6 +50,7 @@ def get_turn_idx(dx):
 
     turn_starts = x[0::2]
     turn_stops = x[1::2]
+    print('turn_starts.shape,turn_stops,shape = ', turn_starts.shape,turn_stops,shape)
 
     left_starts = turn_starts[turns[turn_stops]== 1]
 
