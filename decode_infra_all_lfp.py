@@ -138,7 +138,7 @@ if __name__ == "__main__":
         'kernel' : 2,
         'nb_filter' : 5,
         'window' : 100,
-        'offset' : 10,
+        'offset' : 0,
         'nb_test' : 1,
         'nb_trains' : 1,
         'verbose' : False,

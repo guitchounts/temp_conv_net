@@ -1,0 +1,1 @@
+crossings = np.where(abs(dx) > 5)[0]

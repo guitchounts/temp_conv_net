@@ -90,9 +90,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
         timeseries2 = np.atleast_2d(timeseries2).T
     
 
-    left_starts,right_starts = get_turn_idx(head_signals)
-
-
+    
 
 
     nb_out_samples, nb_out_series = timeseries2.shape
@@ -106,10 +104,10 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
     print(X.shape)
 
 
-    # non_zeros = np.where(abs(y) > 0.25 )[0]    
+    non_zeros = np.where(abs(y) > 0.1 )[0]    
     
-    # y = y[non_zeros,:]
-    # X = X[non_zeros,:,:]
+    y = y[non_zeros,:]
+    X = X[non_zeros,:,:]
     # pos = np.where(y > 0)[0]
     # neg = np.where(y < 0)[0]
     # y[neg] = -1
