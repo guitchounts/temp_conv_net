@@ -10,7 +10,7 @@ import pandas as pd
 from data_helpers import grouper
 from TempConv import determine_fit
 from scipy import stats,signal
-
+from skimage import exposure
 # In[9]:
 
 
@@ -55,25 +55,24 @@ def run_decoding(lfp_path,head_path,nn_params):
     
     xyz = filter(np.sqrt(head_signals[:,0]**2 + head_signals[:,1]**2 + head_signals[:,2]**2     ),[1],filt_type='lowpass',fs=fs)
 
-    dx_neg = np.empty(head_signals[:,3].shape)
-    dx_pos = np.empty(head_signals[:,3].shape)
-    dx = head_signals[:,3]
-    dx_neg[np.where(dx < 0)[0]] = dx[np.where(dx < 0)[0]]
+    # dx_neg = np.empty(head_signals[:,3].shape)
+    # dx_pos = np.empty(head_signals[:,3].shape)
+    # dx = head_signals[:,3]
+    # dx_neg[np.where(dx < 0)[0]] = dx[np.where(dx < 0)[0]]
 
-    dx_pos[np.where(dx > 0)[0]] = dx[np.where(dx > 0)[0]]
+    # dx_pos[np.where(dx > 0)[0]] = dx[np.where(dx > 0)[0]]
 
 
-    filt_unwrapped_yaw = filter(np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,6]))),[1.],fs=fs,filt_type='lowpass')
-    lowpass_dx = np.gradient(filt_unwrapped_yaw)
+    dx = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,6]))),[1],filt_type='lowpass'  )      )
+    dx = exposure.equalize_hist(dx,nbins=1000)
+    # filt_roll = filter(head_signals[:,7],[1.],fs=fs,filt_type='lowpass')
+    # filt_pitch = filter(head_signals[:,8],[1.],fs=fs,filt_type='lowpass')
 
-    filt_roll = filter(head_signals[:,7],[1.],fs=fs,filt_type='lowpass')
-    filt_pitch = filter(head_signals[:,8],[1.],fs=fs,filt_type='lowpass')
-
-    lowpass_dy = np.gradient(filt_roll)
-    lowpass_dz = np.gradient(filt_pitch)
+    # lowpass_dy = np.gradient(filt_roll)
+    # lowpass_dz = np.gradient(filt_pitch)
 
     #head_signals = np.vstack([head_signals[:,6],head_signals[:,7],head_signals[:,8]]).T
-    head_signals = np.vstack([head_signals[:,3]]).T
+    head_signals = np.vstack([dx]).T
     #head_signals_int = ['left','right']
 
 
