@@ -98,16 +98,16 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
     print('THE SHAPES OF timeseries1, timeseries2 ==== ',timeseries1.shape, timeseries2.shape)    
     X, y = make_timeseries_instances(timeseries1, timeseries2, nn_params['window'], nn_params['offset'])
 
-    print('###################### getting non-zero values ######################')
+    # print('###################### getting non-zero values ######################')
     
-    print(y.shape)
-    print(X.shape)
+    # print(y.shape)
+    # print(X.shape)
 
 
-    non_zeros = np.where(abs(y) > 0.1 )[0]    
+    # non_zeros = np.where(abs(y) > 0.1 )[0]    
     
-    y = y[non_zeros,:]
-    X = X[non_zeros,:,:]
+    # y = y[non_zeros,:]
+    # X = X[non_zeros,:,:]
     # pos = np.where(y > 0)[0]
     # neg = np.where(y < 0)[0]
     # y[neg] = -1
