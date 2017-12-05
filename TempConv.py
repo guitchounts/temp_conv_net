@@ -3,7 +3,7 @@ from keras.layers import Conv1D, Dense, MaxPooling1D, Flatten, Dropout
 from keras.models import Sequential
 from keras.optimizers import Adam
 from keras.callbacks import EarlyStopping
-from data_helpers import pass_filter, split_data, make_timeseries_instances, timeseries_shuffler
+from data_helpers import pass_filter, split_data, make_timeseries_instances, timeseries_shuffler,sample_dx_uniformly
 from metrics_helper import do_the_thing
 import keras.backend as K
 from sklearn.preprocessing import Normalizer
