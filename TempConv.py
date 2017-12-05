@@ -121,8 +121,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
     #y = Normalizer(norm='l2').fit_transform(np.atleast_2d(y))
     #y = (y - np.mean(y)) / np.std(y)
     
-    print(y.shape)
-    print(X.shape)
+    
 
     X, y = timeseries_shuffler(X, y, 3000, 25)
     
@@ -156,8 +155,8 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
         y_train, 
         epochs=nn_params['eps'], 
         batch_size=nn_params['bs'], 
-        validation_data=(X_test, y_test) #,
-        #callbacks=[early_stopping]
+        validation_data=(X_test, y_test),
+        callbacks=[early_stopping]
     )
 
     return model, X_train, X_test, y_train, y_test
