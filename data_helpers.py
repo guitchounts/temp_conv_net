@@ -2,6 +2,38 @@ from scipy import stats, signal
 import numpy as np
 from itertools import zip_longest
 
+def sample_dx_uniformly(derivative):
+################### sample the dx distribution evenly: ####################
+    bins = 10000
+    hist,edges = np.histogram(derivative,bins=bins,normed=True)
+    
+    bins_where_values_from = np.searchsorted(edges,derivative)
+    
+    bin_weights = 1/(hist/sum(hist))
+    
+    inv_weights = bin_weights[bins_where_values_from-1]
+    
+    dx_idx = np.arange(0,len(derivative),1)
+
+    sampled_dx_idx = np.random.choice(dx_idx,size=10000,replace=False,p =inv_weights/sum(inv_weights)  )
+
+    sampled_dx = np.random.choice(derivative,size=10000,replace=False,p =inv_weights/sum(inv_weights)  )
+
+
+    f,axarr = plt.subplots(2,dpi=600,sharex=True)
+
+    axarr[0].hist(derivative,bins=200)
+    axarr[0].set_ylabel('d_yaw \n original')
+
+    axarr[1].hist(sampled_dx,bins=200)
+    axarr[1].set_ylabel('d_yaw \n resampled')
+
+    sns.despine(left=True,bottom=True)
+
+    f.savefig('resampled_original_histograms.pdf')
+
+    return sampled_dx_idx
+
 def pass_filter(ephys,freq_range,filt_order = 4,filt_type='bandpass',fs=10.):
     # design Elliptic filter:
 

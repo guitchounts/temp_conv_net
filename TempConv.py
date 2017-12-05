@@ -97,8 +97,14 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
 
     print('THE SHAPES OF timeseries1, timeseries2 ==== ',timeseries1.shape, timeseries2.shape)    
     X, y = make_timeseries_instances(timeseries1, timeseries2, nn_params['window'], nn_params['offset'])
+    print('Shapes of X and y after making timeseries instance:', X.shape,y.shape)
 
-    # print('###################### getting non-zero values ######################')
+    print('###################### resampling y ######################')
+
+    sampled_dx_idx = sample_dx_uniformly(y)
+    y = y[sampled_dx_idx]
+    X = X[sampled_dx_idx,:,:]
+    print('Shapes of X and y after resampling:', X.shape,y.shape)
     
     # print(y.shape)
     # print(X.shape)
