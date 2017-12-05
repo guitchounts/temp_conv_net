@@ -64,7 +64,7 @@ def run_decoding(lfp_path,head_path,nn_params):
 
 
     dx = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,6]))),[1],filt_type='lowpass'  )      )
-    dx = exposure.equalize_hist(dx,nbins=1000)
+    
     # filt_roll = filter(head_signals[:,7],[1.],fs=fs,filt_type='lowpass')
     # filt_pitch = filter(head_signals[:,8],[1.],fs=fs,filt_type='lowpass')
 
@@ -137,7 +137,7 @@ if __name__ == "__main__":
         'kernel' : 2,
         'nb_filter' : 5,
         'window' : 100,
-        'offset' : 10,
+        'offset' : 1,0,
         'nb_test' : 1,
         'nb_trains' : 1,
         'verbose' : False,

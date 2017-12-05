@@ -102,7 +102,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
     print('###################### resampling y ######################')
 
     sampled_dx_idx = sample_dx_uniformly(y)
-    y = y[sampled_dx_idx]
+    y = y[sampled_dx_idx,:]
     X = X[sampled_dx_idx,:,:]
     print('Shapes of X and y after resampling:', X.shape,y.shape)
     
