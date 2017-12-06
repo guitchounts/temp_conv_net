@@ -4,6 +4,7 @@ from itertools import zip_longest
 
 def sample_dx_uniformly(derivative):
     ################### sample the dx distribution evenly: ####################
+    derivative = np.squeeze(derivative)
     bins = 10000
     hist,edges = np.histogram(derivative,bins=bins,normed=True)
     
@@ -13,11 +14,11 @@ def sample_dx_uniformly(derivative):
     
     inv_weights = bin_weights[bins_where_values_from-1]
     
-    dx_idx = np.arange(0,len(derivative[:,0]),1)
+    dx_idx = np.arange(0,len(derivative),1)
 
     sampled_dx_idx = np.random.choice(dx_idx,size=10000,replace=False,p =inv_weights/sum(inv_weights)  )
 
-    sampled_dx = np.random.choice(derivative[:,0],size=10000,replace=False,p =inv_weights/sum(inv_weights)  )
+    sampled_dx = np.random.choice(derivative,size=10000,replace=False,p =inv_weights/sum(inv_weights)  )
 
 
     f,axarr = plt.subplots(2,dpi=600,sharex=True)
