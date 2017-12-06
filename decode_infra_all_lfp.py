@@ -64,7 +64,7 @@ def run_decoding(lfp_path,head_path,nn_params):
 
 
     dx = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,6]))),[1],filt_type='lowpass'  )      )
-
+    dy = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,7]))),[1],filt_type='lowpass'  )      )
     dz = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,8]))),[1],filt_type='lowpass'  )      )
     
     # filt_roll = filter(head_signals[:,7],[1.],fs=fs,filt_type='lowpass')
@@ -74,14 +74,14 @@ def run_decoding(lfp_path,head_path,nn_params):
     # lowpass_dz = np.gradient(filt_pitch)
 
     #head_signals = np.vstack([head_signals[:,6],head_signals[:,7],head_signals[:,8]]).T
-    head_signals = np.vstack([dz]).T
+    head_signals = np.vstack([dx,dy,dz]).T
     #head_signals_int = ['left','right']
 
 
 
     head_signals_keys = list(head_signals_h5.keys())[0:9][idx_start:idx_stop]
     #head_signals_int = ['yaw_abs', 'roll_abs', 'pitch_abs']
-    head_signals_int = ['d_pitch']
+    head_signals_int = ['d_yaaw', 'd_roll','d_pitch']
 
     print('head_signals_keys intuitive: ', head_signals_int)
 
@@ -134,7 +134,7 @@ if __name__ == "__main__":
 
     nn_params = {
         'bs' : 256,
-        'eps' : 25,
+        'eps' : 35,
         'lr' : 0.0005,
         'kernel' : 2,
         'nb_filter' : 5,
