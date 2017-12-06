@@ -132,7 +132,7 @@ if __name__ == "__main__":
 
     nn_params = {
         'bs' : 256,
-        'eps' : 15,
+        'eps' : 25,
         'lr' : 0.0005,
         'kernel' : 2,
         'nb_filter' : 5,
