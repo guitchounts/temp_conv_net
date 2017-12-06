@@ -3,7 +3,7 @@ import numpy as np
 from itertools import zip_longest
 
 def sample_dx_uniformly(derivative):
-################### sample the dx distribution evenly: ####################
+    ################### sample the dx distribution evenly: ####################
     bins = 10000
     hist,edges = np.histogram(derivative,bins=bins,normed=True)
     
