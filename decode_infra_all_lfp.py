@@ -86,7 +86,7 @@ def run_decoding(lfp_path,head_path,nn_params):
     print('head_signals_keys intuitive: ', head_signals_int)
 
     ## limit signals to 1e6 samples:
-    limit = int(2e6)
+    limit = int(1e6)
     if neural_data.shape[1] > limit:
         print('Reducing Data Size Down to %d Samples' % limit)
         tetrodes  = tetrodes[:,:,0:limit]
