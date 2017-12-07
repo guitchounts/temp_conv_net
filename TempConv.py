@@ -99,12 +99,12 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
     X, y = make_timeseries_instances(timeseries1, timeseries2, nn_params['window'], nn_params['offset'])
     print('Shapes of X and y after making timeseries instance:', X.shape,y.shape)
 
-    print('###################### resampling y ######################')
+    # print('###################### resampling y ######################')
 
-    sampled_dx_idx = sample_dx_uniformly(y)
-    y = y[sampled_dx_idx,:]
-    X = X[sampled_dx_idx,:,:]
-    print('Shapes of X and y after resampling:', X.shape,y.shape)
+    # sampled_dx_idx = sample_dx_uniformly(y)
+    # y = y[sampled_dx_idx,:]
+    # X = X[sampled_dx_idx,:,:]
+    # print('Shapes of X and y after resampling:', X.shape,y.shape)
     
     # print(y.shape)
     # print(X.shape)
@@ -142,6 +142,19 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
     
     X_train, X_test, y_train, y_test = split_data(X, y, 0.5)
     
+
+    print('###################### resampling y ######################')
+
+    sampled_dx_idx_train = sample_dx_uniformly(y_train)
+    sampled_dx_idx_test = sample_dx_uniformly(y_test)
+
+    y_train = y_train[sampled_dx_idx_train,:]
+    X_train = X_train[sampled_dx_idx_train,:,:]
+
+    y_test = y_test[sampled_dx_idx_test,:]
+    X_test = X_test[sampled_dx_idx_test,:,:]
+    print('Shapes of X_train and y_train after resampling:', X_train.shape,y_train.shape)
+
     early_stopping = EarlyStopping(
         monitor='val_loss', 
         min_delta=0, 
