@@ -145,8 +145,8 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
 
     print('###################### resampling y ######################')
 
-    sampled_dx_idx_train = sample_dx_uniformly(y_train)
-    sampled_dx_idx_test = sample_dx_uniformly(y_test)
+    sampled_dx_idx_train = sample_dx_uniformly(y_train,num_points=5000)
+    sampled_dx_idx_test = sample_dx_uniformly(y_test,num_points=5000)
 
     y_train = y_train[sampled_dx_idx_train,:]
     X_train = X_train[sampled_dx_idx_train,:,:]
