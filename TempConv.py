@@ -168,8 +168,8 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
         y_train, 
         epochs=nn_params['eps'], 
         batch_size=nn_params['bs'], 
-        validation_data=(X_test, y_test) #,
-        # callbacks=[early_stopping]
+        validation_data=(X_test, y_test),
+        callbacks=[early_stopping]
     )
 
     return model, X_train, X_test, y_train, y_test
