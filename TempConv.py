@@ -47,7 +47,7 @@ def make_timeseries_regressor(nn_params, nb_input_series=1, nb_outputs=1,custom_
     #    activation='relu', 
     #    input_shape=(nn_params['window'], nb_input_series)
     # ))
-    model.add(MaxPooling1D())
+    #model.add(MaxPooling1D())
     model.add(Conv1D(
         int(nn_params['nb_filter']*4), 
         kernel_size=int(nn_params['kernel']*4), 
