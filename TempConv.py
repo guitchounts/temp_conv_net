@@ -101,12 +101,12 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
 
     print('###################### resampling y ######################')
 
-    sampled_dx_idx = sample_dx_uniformly(y)
-    sampled_dx_idx = np.sort(sampled_dx_idx)
+    # sampled_dx_idx = sample_dx_uniformly(y)
+    # sampled_dx_idx = np.sort(sampled_dx_idx)
     
-    y = y[sampled_dx_idx,:]
-    X = X[sampled_dx_idx,:,:]
-    print('Shapes of X and y after resampling:', X.shape,y.shape)
+    # y = y[sampled_dx_idx,:]
+    # X = X[sampled_dx_idx,:,:]
+    # print('Shapes of X and y after resampling:', X.shape,y.shape)
     
     print(y.shape)
     print(X.shape)
@@ -178,12 +178,12 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
 
 def determine_fit(X, y, y_key, nn_params, plot_result=True):
 
-    if y_key[0].find('yaw') == -1:
-        custom_loss = 0
-        print('Training on %s, using MSE as loss function' % y_key[0])
-    else:
-        custom_loss = 1
-        print('Training on %s, using custom loss function' % y_key[0])
+    # if y_key[0].find('yaw') == -1:
+    custom_loss = 0
+    #     print('Training on %s, using MSE as loss function' % y_key[0])
+    # else:
+    #     custom_loss = 1
+    #     print('Training on %s, using custom loss function' % y_key[0])
 
 
     model, X_train, X_test, y_train, y_test = evaluate_timeseries(
