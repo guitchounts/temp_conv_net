@@ -19,7 +19,7 @@ def filter(ephys,freq_range,filt_order = 4,filt_type='bandpass',fs=10.):
     
     # design Elliptic filter:
 
-    [b,a] = signal.butter(filt_order,[freq/fs for freq in freq_range],btype=filt_type)
+    [b,a] = signal.butter(filt_order,[freq/(fs/2) for freq in freq_range],btype=filt_type)
     
     filtered_trace = signal.filtfilt(b,a,ephys,axis=0)
     return filtered_trace
@@ -30,12 +30,27 @@ def run_decoding(lfp_path,head_path,nn_params):
     lfp_file = h5py.File(lfp_path, 'r')
     print('lfp_file keys:',lfp_file.keys())
     data_name = list(lfp_file.keys())[0]
+
+
+
+
+
     neural_data = np.asarray(lfp_file[data_name]) # iterate through powerbands
+
+
+
     print('Shape of neural data, as loaded: ', neural_data.shape)
-    if neural_data.shape[0] > neural_data.shape[1]:
+    if neural_data.shape[0] > neural_data.shape[1]:   #### ephys should be channels x samples
         neural_data = neural_data.T
 
-    fs = 100.
+
+    if data_name.find('lfp_power') == 1:
+        ### take average of LFP bands in each tetrode: 
+        avgd_neural_data = np.empty([64,neural_data.shape[1]])
+        fs = 10.
+    else: 
+        fs = 100.
+
     ##### shuffle control:  neural_data = np.random.permutation(neural_data.T).T
 
     tetrodes = grouper(neural_data, neural_data.shape[0])
@@ -53,7 +68,7 @@ def run_decoding(lfp_path,head_path,nn_params):
 
 
     
-    xyz = filter(np.sqrt(head_signals[:,0]**2 + head_signals[:,1]**2 + head_signals[:,2]**2     ),[1],filt_type='lowpass',fs=fs)
+    # xyz = filter(np.sqrt(head_signals[:,0]**2 + head_signals[:,1]**2 + head_signals[:,2]**2     ),[1],filt_type='lowpass',fs=fs)
 
     # dx_neg = np.empty(head_signals[:,3].shape)
     # dx_pos = np.empty(head_signals[:,3].shape)
@@ -63,9 +78,9 @@ def run_decoding(lfp_path,head_path,nn_params):
     # dx_pos[np.where(dx > 0)[0]] = dx[np.where(dx > 0)[0]]
 
 
-    dx = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,6]))),[1],filt_type='lowpass'  )      )
-    dy = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,7]))),[1],filt_type='lowpass'  )      )
-    dz = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,8]))),[1],filt_type='lowpass'  )      )
+    # dx = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,6]))),[1],filt_type='lowpass',fs=fs  )      )
+    # dy = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,7]))),[1],filt_type='lowpass',fs=fs  )      )
+    # dz = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,8]))),[1],filt_type='lowpass',fs=fs  )      )
     
     # filt_roll = filter(head_signals[:,7],[1.],fs=fs,filt_type='lowpass')
     # filt_pitch = filter(head_signals[:,8],[1.],fs=fs,filt_type='lowpass')
@@ -73,15 +88,15 @@ def run_decoding(lfp_path,head_path,nn_params):
     # lowpass_dy = np.gradient(filt_roll)
     # lowpass_dz = np.gradient(filt_pitch)
 
-    #head_signals = np.vstack([head_signals[:,6],head_signals[:,7],head_signals[:,8]]).T
-    head_signals = np.vstack([dx,dy,dz]).T
+    head_signals = np.vstack([head_signals[:,6],head_signals[:,7],head_signals[:,8]]).T
+    #head_signals = np.vstack([dx,dy,dz]).T
     #head_signals_int = ['left','right']
 
 
 
     head_signals_keys = list(head_signals_h5.keys())[0:9][idx_start:idx_stop]
-    #head_signals_int = ['yaw_abs', 'roll_abs', 'pitch_abs']
-    head_signals_int = ['d_yaaw', 'd_roll','d_pitch']
+    head_signals_int = ['yaw_abs', 'roll_abs', 'pitch_abs']
+    #head_signals_int = ['d_yaaw', 'd_roll','d_pitch']
 
     print('head_signals_keys intuitive: ', head_signals_int)
 
