@@ -90,7 +90,7 @@ def run_decoding(lfp_path,head_path,nn_params):
 
     head_signals = np.vstack([head_signals[:,6],head_signals[:,7],head_signals[:,8], xyz]).T
     #head_signals = np.vstack([dx,dy,dz]).T
-    #head_signals_int = ['left','right']
+    #head_signals_int = ['left','right']  
 
 
 
