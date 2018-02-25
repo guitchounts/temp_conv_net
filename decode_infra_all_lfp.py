@@ -68,7 +68,7 @@ def run_decoding(lfp_path,head_path,nn_params):
 
 
     
-    # xyz = filter(np.sqrt(head_signals[:,0]**2 + head_signals[:,1]**2 + head_signals[:,2]**2     ),[1],filt_type='lowpass',fs=fs)
+    xyz = filter(np.sqrt(head_signals[:,0]**2 + head_signals[:,1]**2 + head_signals[:,2]**2     ),[1],filt_type='lowpass',fs=fs)
 
     # dx_neg = np.empty(head_signals[:,3].shape)
     # dx_pos = np.empty(head_signals[:,3].shape)
@@ -88,14 +88,14 @@ def run_decoding(lfp_path,head_path,nn_params):
     # lowpass_dy = np.gradient(filt_roll)
     # lowpass_dz = np.gradient(filt_pitch)
 
-    head_signals = np.vstack([head_signals[:,6],head_signals[:,7],head_signals[:,8]]).T
+    head_signals = np.vstack([head_signals[:,6],head_signals[:,7],head_signals[:,8], xyz]).T
     #head_signals = np.vstack([dx,dy,dz]).T
     #head_signals_int = ['left','right']
 
 
 
     head_signals_keys = list(head_signals_h5.keys())[0:9][idx_start:idx_stop]
-    head_signals_int = ['yaw_abs', 'roll_abs', 'pitch_abs']
+    head_signals_int = ['yaw_abs', 'roll_abs', 'pitch_abs', 'total_acc']
     #head_signals_int = ['d_yaaw', 'd_roll','d_pitch']
 
     print('head_signals_keys intuitive: ', head_signals_int)
