@@ -199,7 +199,7 @@ def determine_fit(X, y, y_key, nn_params, plot_result=True):
         y_test, 
         y_test_hat, 
         y_key, 
-        'temp_conv_results_{}_y:{}'.format(nn_params['id'], y_key),
+        'temp_conv_results_{}_{}'.format(nn_params['id'], y_key),
         plot_result=plot_result
     )
     
