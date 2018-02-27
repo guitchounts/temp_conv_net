@@ -153,7 +153,7 @@ if __name__ == "__main__":
         'lr' : 0.0005,
         'kernel' : 2,
         'nb_filter' : 5,
-        'window' : 100,
+        'window' : 110,
         'offset' : 10,
         'nb_test' : 1,
         'nb_trains' : 1,
