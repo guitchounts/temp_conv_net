@@ -60,7 +60,7 @@ def plot_results(y_valids, y_hats, y_names, R2s, rs, model_name='GRU'):
 
     plt.tight_layout()
 
-    f.savefig(model_name + '.pdf')
+    f.savefig(model_name + '.png')
     return plt
 
 def do_the_thing(y_valids, y_hats, y_names, model_name, plot_result=False):
