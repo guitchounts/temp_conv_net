@@ -188,6 +188,9 @@ if __name__ == "__main__":
 
         save_dir = './' + fil + '/' + config['config']['experiment'] + '/'
 
+        if not os.path.exists(save_dir):
+                os.makedirs(save_dir)
+
         neural_path = './' + fil + '/' + config['config']['neural_data']
         head_path = './' + fil + '/' + config['config']['head_data']
         print('************************************************************************************')
