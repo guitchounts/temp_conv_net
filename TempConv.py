@@ -99,7 +99,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
     X, y = make_timeseries_instances(timeseries1, timeseries2, nn_params['window'], nn_params['offset'])
     print('Shapes of X and y after making timeseries instance:', X.shape,y.shape)
 
-    print('###################### resampling y ######################')
+    #print('###################### resampling y ######################')
 
     # sampled_dx_idx = sample_dx_uniformly(y)
     # sampled_dx_idx = np.sort(sampled_dx_idx)
@@ -176,7 +176,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
 
     return model, X_train, X_test, y_train, y_test
 
-def determine_fit(X, y, y_key, nn_params, plot_result=True):
+def determine_fit(X, y, y_key, nn_params,save_dir, plot_result=True):
 
     # if y_key[0].find('yaw') == -1:
     custom_loss = 0
@@ -200,6 +200,7 @@ def determine_fit(X, y, y_key, nn_params, plot_result=True):
         y_test_hat, 
         y_key, 
         'temp_conv_results_{}_{}'.format(nn_params['id'], y_key),
+        save_dir,
         plot_result=plot_result
     )
     

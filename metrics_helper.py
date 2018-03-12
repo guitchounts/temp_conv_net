@@ -16,7 +16,7 @@ def analyze_results(y_valids, y_hats):
     rs = [pearsonr(y_valids[:,i], y_hats[:,i])[0] for i in range(y_valids.shape[1])]
     return R2s, rs
 
-def plot_results(y_valids, y_hats, y_names, R2s, rs, model_name='GRU'):
+def plot_results(y_valids, y_hats, y_names, R2s, rs,save_dir, model_name='GRU'):
     num_figs = len(y_names)
     f = plt.figure(dpi=600,figsize=(7,3))
     f.suptitle(model_name, fontsize=10)
@@ -60,14 +60,14 @@ def plot_results(y_valids, y_hats, y_names, R2s, rs, model_name='GRU'):
 
     plt.tight_layout()
 
-    f.savefig(model_name + '.png')
+    f.savefig(save_dir + model_name + '.png')
     return plt
 
-def do_the_thing(y_valids, y_hats, y_names, model_name, plot_result=False):
+def do_the_thing(y_valids, y_hats, y_names, model_name,save_dir, plot_result=False):
     R2s, rs = analyze_results(y_valids, y_hats)
     print('******************************** saving results! ********************************')
-    np.savez(str(y_names) + '_results.npz',y_valids=y_valids,y_hats=y_hats)
+    np.savez(save_dir + str(y_names) + '_results.npz',y_valids=y_valids,y_hats=y_hats)
     if plot_result:
-        plot_results(y_valids, y_hats, y_names, R2s, rs, model_name=model_name)
+        plot_results(y_valids, y_hats, y_names, R2s, rs,save_dir, model_name=model_name)
     
     return R2s, rs

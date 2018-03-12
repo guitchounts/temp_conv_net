@@ -11,6 +11,7 @@ from data_helpers import grouper
 from TempConv import determine_fit
 from scipy import stats,signal
 from skimage import exposure
+import json
 # In[9]:
 
 
@@ -24,7 +25,7 @@ def filter(ephys,freq_range,filt_order = 4,filt_type='bandpass',fs=10.):
     filtered_trace = signal.filtfilt(b,a,ephys,axis=0)
     return filtered_trace
 
-def run_decoding(lfp_path,head_path,nn_params):
+def run_decoding(lfp_path,head_path,nn_params,save_dir):
 
     ## get and format data
     lfp_file = h5py.File(lfp_path, 'r')
@@ -131,7 +132,7 @@ def run_decoding(lfp_path,head_path,nn_params):
             
             for i in range(nn_params['nb_trains']): # replace with k-fold? n k-folds?
                 head_signal = head_signals[:,head_signal_idx]
-                R2, r = determine_fit(tetrode, head_signal, [head_signals_int[head_signal_idx]], nn_params,)
+                R2, r = determine_fit(tetrode, head_signal, [head_signals_int[head_signal_idx]], nn_params, save_dir)
                 
                 R2r_arr['R2s'].append(R2[0])
                 R2r_arr['rs'].append(r[0])
@@ -147,21 +148,71 @@ def run_decoding(lfp_path,head_path,nn_params):
 
 if __name__ == "__main__":
 
-    nn_params = {
-        'bs' : 256,
-        'eps' : 35,
-        'lr' : 0.0005,
-        'kernel' : 2,
-        'nb_filter' : 5,
-        'window' : 100,
-        'offset' : 50,
-        'nb_test' : 1,
-        'nb_trains' : 1,
-        'verbose' : False,
-        'id' : 3
-    }
+    # nn_params = {
+    #     'bs' : 256,
+    #     'eps' : 35,
+    #     'lr' : 0.0005,
+    #     'kernel' : 2,
+    #     'nb_filter' : 5,
+    #     'window' : 100,
+    #     'offset' : 50,
+    #     'nb_test' : 1,
+    #     'nb_trains' : 1,
+    #     'verbose' : False,
+    #     'id' : 3
+    # }
 
-    lfp_path = sys.argv[1]
-    head_path = sys.argv[2]
+    # lfp_path = sys.argv[1]
+    # head_path = sys.argv[2]
+    config_file = sys.argv[1]
 
-    run_decoding(lfp_path,head_path,nn_params)
+    with open(config_file) as json_data_file:
+        config = json.load(json_data_file)
+
+
+# cd  "C:\Users\Grigori Guitchounts\Dropbox (coxlab)\Ephys\Data" \ &&
+# cd .\636505099725591062\ &&
+# cd &&
+# mkdir 031218_mua && cd .\031218_mua &&
+# python "C:\Users\Grigori Guitchounts\Documents\GitHub\temp_conv_net\decode_infra_all_lfp.py" ..\mua_firing_rates_100hz.hdf5 ..\all_head_data_100hz.hdf5 &&
+
+    #### assuming we're in the GratXXX directory. 
+    input_file_path = os.getcwd()
+    all_files = []
+    for file in os.listdir(input_file_path):
+            if file.startswith("636"):
+                all_files.append(file)
+    all_files = np.asarray(all_files)
+
+    for fil in all_files:
+
+        save_dir = './' + fil + '/' + config['config']['experiment'] + '/'
+
+        neural_path = './' + fil + '/' + config['config']['neural_data']
+        head_path = './' + fil + '/' + config['config']['head_data']
+        print('************************************************************************************')
+        print('*************************** Running Decoding on %s *********************************' % save_dir)
+        print('*************************** Neural Data from %s ************************************' % neural_path)
+        print('*************************** Head Data from %s **************************************' % head_path)
+        print('************************************************************************************')
+        
+        run_decoding(neural_path,head_path,config['nn_params'],save_dir)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
