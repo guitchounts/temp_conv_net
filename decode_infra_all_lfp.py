@@ -189,7 +189,7 @@ if __name__ == "__main__":
         save_dir = './' + fil + '/' + config['config']['experiment'] + '/'
 
         if not os.path.exists(save_dir):
-                os.makedirs(save_dir)
+            os.makedirs(save_dir)
 
         neural_path = './' + fil + '/' + config['config']['neural_data']
         head_path = './' + fil + '/' + config['config']['head_data']
@@ -199,7 +199,10 @@ if __name__ == "__main__":
         print('*************************** Head Data from %s **************************************' % head_path)
         print('************************************************************************************')
         
-        run_decoding(neural_path,head_path,config['nn_params'],save_dir)
+
+        if os.path.exists(head_path): #### make sure the experiment directory has the neural/head data:
+            if os.path.exists(neural_path):
+                run_decoding(neural_path,head_path,config['nn_params'],save_dir)
 
 
 
