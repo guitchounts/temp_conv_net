@@ -75,7 +75,7 @@ def make_timeseries_regressor(nn_params, nb_input_series=1, nb_outputs=1,custom_
     adam = Adam(lr=nn_params['lr'], beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
     
     if custom_loss == 0:
-        model.compile(loss='mae', optimizer=adam, metrics=['mse'])
+        model.compile(loss='mse', optimizer=adam, metrics=['mse'])
     else:
         model.compile(loss=modified_mse, optimizer=adam, metrics=['mse'])
 
