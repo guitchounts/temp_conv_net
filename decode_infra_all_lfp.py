@@ -73,7 +73,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
 
     ## lowpass filter:
     for x in range(6,9):
-        print('Filtering head signal %s' % head_signals_h5.keys()[x])
+        print('Filtering head signal %s' % list(head_signals_h5.keys())[x])
         head_signals[:,x] = filter(head_signals[:,x],[1],filt_type='lowpass',fs=fs)
 
 
