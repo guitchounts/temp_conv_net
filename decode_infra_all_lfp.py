@@ -71,6 +71,11 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
     
     xyz = filter(np.sqrt(head_signals[:,0]**2 + head_signals[:,1]**2 + head_signals[:,2]**2     ),[1],filt_type='lowpass',fs=fs)
 
+    ## lowpass filter:
+    for x in range(6,9):
+        head_signals[:,x] = filter(head_signals[:,x],[1],filt_type='lowpass',fs=fs)
+
+
     # dx_neg = np.empty(head_signals[:,3].shape)
     # dx_pos = np.empty(head_signals[:,3].shape)
     # dx = head_signals[:,3]
