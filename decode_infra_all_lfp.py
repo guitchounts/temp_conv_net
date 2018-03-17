@@ -120,7 +120,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
     
     stats = {}
 
-    model_type = onfig['config']['model_type']
+    model_type = config['config']['model_type']
 
     # In[12]:
 
