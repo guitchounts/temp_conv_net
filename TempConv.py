@@ -141,10 +141,12 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0,model_
         print('\n\nExample input feature:', X[0], '\n\nExample output labels:', y[0])
     
     if model_type == 'ridge':
+        print(model_type)
         print('Making Ridge Model')
         model = make_ridgeCV_model()
         
     else:
+        print(model_type)
         print('Making TempConvNet Model')
         model = make_timeseries_regressor(
             nn_params,
@@ -210,7 +212,7 @@ def determine_fit(X, y, y_key, nn_params,save_dir, plot_result=True,model_type =
         y, 
         nn_params,
         custom_loss,
-        model_type
+        model_type=model_type
     )
     
     y_test_hat = model.predict(X_test)
