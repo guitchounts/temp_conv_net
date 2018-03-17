@@ -11,6 +11,7 @@ from data_helpers import grouper
 from TempConv import determine_fit
 from scipy import stats,signal
 from skimage import exposure
+from sklearn import linear_model
 import json
 # In[9]:
 
@@ -120,6 +121,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
     
     stats = {}
 
+    model_type = 
 
     # In[12]:
 
@@ -138,7 +140,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
             
             for i in range(nn_params['nb_trains']): # replace with k-fold? n k-folds?
                 head_signal = head_signals[:,head_signal_idx]
-                R2, r = determine_fit(tetrode, head_signal, [head_signals_int[head_signal_idx]], nn_params, save_dir)
+                R2, r = determine_fit(tetrode, head_signal, [head_signals_int[head_signal_idx]], nn_params, save_dir,model_type)
                 
                 R2r_arr['R2s'].append(R2[0])
                 R2r_arr['rs'].append(r[0])
