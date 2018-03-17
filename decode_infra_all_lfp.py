@@ -11,7 +11,6 @@ from data_helpers import grouper
 from TempConv import determine_fit
 from scipy import stats,signal
 from skimage import exposure
-from sklearn import linear_model
 import json
 # In[9]:
 
@@ -121,7 +120,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
     
     stats = {}
 
-    model_type = 
+    model_type = onfig['config']['model_type']
 
     # In[12]:
 

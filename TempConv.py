@@ -7,6 +7,7 @@ from data_helpers import pass_filter, split_data, make_timeseries_instances, tim
 from metrics_helper import do_the_thing
 import keras.backend as K
 from sklearn.preprocessing import Normalizer
+from sklearn import linear_model
 
 def modified_mse(y_true, y_pred): #### modified MSE loss function for absolute yaw data (0-360 values wrap around)
     
