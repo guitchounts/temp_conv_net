@@ -38,6 +38,14 @@ def get_turn_idx(dx):
 
     return left_starts,right_starts
 
+def make_ridgeCV_model():
+ 
+    
+    print('********************************** Making RidgeCV Model **********************************')
+    #Declare model
+    model = linear_model.RidgeCV(alphas=[0.1, 1.0, 10.0],normalize=True,fit_intercept=True)
+  
+    return model
 
 def make_timeseries_regressor(nn_params, nb_input_series=1, nb_outputs=1,custom_loss=0):
     model = Sequential()
@@ -83,7 +91,7 @@ def make_timeseries_regressor(nn_params, nb_input_series=1, nb_outputs=1,custom_
     #model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'])
     return model
 
-def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
+def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0,model_type = 'temp_conv'):
     nb_samples, nb_series = timeseries1.shape
     
     if timeseries2.ndim == 1:
@@ -131,13 +139,20 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
         print('\n\nTimeseries ({} samples by {} series):\n'.format(nb_samples, nb_series))
         print('\n\nExample input feature:', X[0], '\n\nExample output labels:', y[0])
     
-    model = make_timeseries_regressor(
-        nn_params,
-        nb_input_series=nb_series, 
-        nb_outputs=nb_out_series,
-        custom_loss=custom_loss
-    )
+    if model_type == 'ridge':
+        print('Making Ridge Model')
+        model = make_ridgeCV_model()
+        
+    else:
+        print('Making TempConvNet Model')
+        model = make_timeseries_regressor(
+            nn_params,
+            nb_input_series=nb_series, 
+            nb_outputs=nb_out_series,
+            custom_loss=custom_loss
+        )
     
+
     if nn_params['verbose']: 
         print('\n\nModel with input size {}, output size {}, {} conv filters of length {}'.format(model.input_shape, model.output_shape))
         model.summary()
@@ -165,18 +180,21 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0):
         mode='auto'
     )
 
-    model.fit(
-        X_train, 
-        y_train, 
-        epochs=nn_params['eps'], 
-        batch_size=nn_params['bs'], 
-        validation_data=(X_test, y_test),
-        callbacks=[early_stopping]
-    )
+    if model_type == 'ridge':
+        model.fit(X_train,y_train)
+    else:
+        model.fit(
+            X_train, 
+            y_train, 
+            epochs=nn_params['eps'], 
+            batch_size=nn_params['bs'], 
+            validation_data=(X_test, y_test),
+            callbacks=[early_stopping]
+        )
 
     return model, X_train, X_test, y_train, y_test
 
-def determine_fit(X, y, y_key, nn_params,save_dir, plot_result=True):
+def determine_fit(X, y, y_key, nn_params,save_dir, plot_result=True,model_type = 'temp_conv'):
 
     # if y_key[0].find('yaw') == -1:
     custom_loss = 0
@@ -190,7 +208,8 @@ def determine_fit(X, y, y_key, nn_params,save_dir, plot_result=True):
         X, 
         y, 
         nn_params,
-        custom_loss
+        custom_loss,
+        model_type
     )
     
     y_test_hat = model.predict(X_test)
