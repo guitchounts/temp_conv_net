@@ -1,9 +1,11 @@
 import numpy as np
 from scipy.stats import pearsonr
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import seaborn as sns
 sns.set_style('white')
+mpl.rcParams['agg.path.chunksize'] = 100000
 
 def get_R2(y_valid,y_hat):
     y_mean=np.mean(y_valid)
