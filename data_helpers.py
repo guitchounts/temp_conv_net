@@ -47,7 +47,7 @@ def pass_filter(ephys,freq_range,filt_order = 4,filt_type='bandpass',fs=10.):
     filtered_trace = signal.filtfilt(b,a,ephys,axis=0)
     return filtered_trace
 
-def split_data(X, y, test_size, standardize=True):
+def split_data(X, y, test_size, standardize=True,shuffle=False):
     test_size_idx = int(test_size * X.shape[0])
     X_train, X_test, y_train, y_test = X[:-test_size_idx], X[-test_size_idx:], y[:-test_size_idx], y[-test_size_idx:]
     
@@ -63,6 +63,13 @@ def split_data(X, y, test_size, standardize=True):
         #y_train = y_train - y_train_mean
         #y_test = y_test - y_train_mean
     
+    if shuffle:
+        print('!!!!!!!!!!!!!!!!!! SHUFFLING X_test !!!!!!!!!!!!!!!!!!')
+        #X_test = X_test.reshape(-1,shuffle_chunk_size)
+        np.random.shuffle(X_test)
+        #X_test.flatten()
+
+
     return X_train, X_test, y_train, y_test
 
 def grouper(iterable, n, fillvalue=None):

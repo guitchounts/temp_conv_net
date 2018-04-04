@@ -99,7 +99,11 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0,model_
         timeseries2 = np.atleast_2d(timeseries2).T
     
 
-    
+
+    if 'shuffle' in nn_params.keys():
+        shuffle = nn_params['shuffle'] ## if the params file has a shuffle key, use it; otherwise set it to False 
+    else:
+        shuffle = False
 
 
     nb_out_samples, nb_out_series = timeseries2.shape
@@ -160,7 +164,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0,model_
         print('\n\nModel with input size {}, output size {}, {} conv filters of length {}'.format(model.input_shape, model.output_shape))
         model.summary()
     
-    X_train, X_test, y_train, y_test = split_data(X, y, 0.5)
+    X_train, X_test, y_train, y_test = split_data(X, y, 0.5,shuffle=shuffle)
     
 
     # print('###################### resampling y ######################')
