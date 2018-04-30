@@ -126,7 +126,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
 
     chunk_indexes = [[v, w] for v, w in zip(chunk_indexes[:-1], chunk_indexes[1:])] # reformat to one list
 
-    hemispheres = ['right', 'left']
+    hemispheres = ['left','right']
 
     all_tetrodes = [tetrodes[:,:,chunk_indexes[chunk][0]:chunk_indexes[chunk][1]] for chunk in range(num_chunks)  ] ## list of 1x16x720000 chunks 
     all_head_signals = [head_signals[chunk_indexes[chunk][0]:chunk_indexes[chunk][1],:] for chunk in range(num_chunks)  ]
