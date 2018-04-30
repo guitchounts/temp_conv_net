@@ -136,13 +136,12 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
 
     model_type = config['config']['model_type']
 
-    # In[12]:
+    
 
     # iterate Xs
 
-     for chunk in range(num_chunks):
+    for chunk in range(num_chunks):
             
-
         stats = {}            
         for tetrode_idx in range(tetrodes.shape[0]): ### should be range(2) for tetrodes split into left and right hemispheres. first = RH, second = LH. 
             tetrode = all_tetrodes[chunk][tetrode_idx,hemisphere[0]:hemisphere[1]].T  # tetrodes[tetrode_idx].T
@@ -155,8 +154,9 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
                     'rs' : []
                 }
                 
-                for i in range(nn_params['nb_trains']): # replace with k-fold? n k-folds?
+                for i in range(nn_params['nb_trains']):
                     head_signal = all_head_signals[chunk][:,head_signal_idx] ###  head_signals[:,head_signal_idx]
+
                     print('***************** Running Decoding on Chunk %d, %s Hemisphere' % (chunk,hemispheres[tetrode_idx]))
                     save_dir = save_dir + hemispheres[tetrode_idx] + '/' ### make a /left/ and /right subdir for saving
                     if not os.path.exists(save_dir):
