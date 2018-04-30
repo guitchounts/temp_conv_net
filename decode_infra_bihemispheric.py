@@ -144,7 +144,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
             
         stats = {}            
         for tetrode_idx in range(tetrodes.shape[0]): ### should be range(2) for tetrodes split into left and right hemispheres. first = RH, second = LH. 
-            tetrode = all_tetrodes[chunk][tetrode_idx,hemisphere[0]:hemisphere[1]].T  # tetrodes[tetrode_idx].T
+            tetrode = all_tetrodes[chunk][tetrode_idx].T  # tetrodes[tetrode_idx].T
             
 
             # iterate ys
