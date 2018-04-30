@@ -145,7 +145,9 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
         stats = {}            
         for tetrode_idx in range(tetrodes.shape[0]): ### should be range(2) for tetrodes split into left and right hemispheres. first = RH, second = LH. 
             tetrode = all_tetrodes[chunk][tetrode_idx].T  # tetrodes[tetrode_idx].T
-            
+            left_right_save_dir = save_dir + hemispheres[tetrode_idx] + '/' ### make a /left/ and /right subdir for saving
+            if not os.path.exists(left_right_save_dir):
+                os.makedirs(left_right_save_dir)
 
             # iterate ys
             for head_signal_idx in range(head_signals.shape[1]): ## four for yaw, roll, pitch, and total_acc
@@ -158,11 +160,9 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
                     head_signal = all_head_signals[chunk][:,head_signal_idx] ###  head_signals[:,head_signal_idx]
 
                     print('***************** Running Decoding on Chunk %d, %s Hemisphere' % (chunk,hemispheres[tetrode_idx]))
-                    save_dir = save_dir + hemispheres[tetrode_idx] + '/' ### make a /left/ and /right subdir for saving
-                    if not os.path.exists(save_dir):
-                        os.makedirs(save_dir)
+                    
 
-                    R2, r = determine_fit(tetrode, head_signal, [head_signals_int[head_signal_idx]], nn_params, save_dir,model_type=model_type)
+                    R2, r = determine_fit(tetrode, head_signal, [head_signals_int[head_signal_idx]], nn_params, left_right_save_dir,model_type=model_type)
                     
                     R2r_arr['R2s'].append(R2[0])
                     R2r_arr['rs'].append(r[0])
