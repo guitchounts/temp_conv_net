@@ -54,7 +54,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
 
     ##### shuffle control:  neural_data = np.random.permutation(neural_data.T).T
 
-    tetrodes = grouper(neural_data, neural_data.shape[0] / 2) ### GROUPING INTO LEFT and RIGHT hemispheres - first 8 and last 8 tetrodes
+    tetrodes = grouper(neural_data, int(neural_data.shape[0] / 2)) ### GROUPING INTO LEFT and RIGHT hemispheres - first 8 and last 8 tetrodes
     ### 0:8 = RH, 8:16 = LF
 
 
