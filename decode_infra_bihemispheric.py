@@ -145,7 +145,8 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
         stats = {}            
         for tetrode_idx in range(tetrodes.shape[0]): ### should be range(2) for tetrodes split into left and right hemispheres. first = RH, second = LH. 
             tetrode = all_tetrodes[chunk][tetrode_idx].T  # tetrodes[tetrode_idx].T
-            left_right_save_dir = save_dir + hemispheres[tetrode_idx] + '/' ### make a /left/ and /right subdir for saving
+            
+            left_right_save_dir = save_dir + chunk + '/' + hemispheres[tetrode_idx] + '/' ### make a /1/left/ and /1/right, /2/left/ and /2/right etc subdir for saving
             if not os.path.exists(left_right_save_dir):
                 os.makedirs(left_right_save_dir)
 
