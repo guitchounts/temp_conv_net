@@ -42,7 +42,7 @@ def sample_dx_uniformly(derivative,num_points=10000):
 def pass_filter(ephys,freq_range,filt_order = 4,filt_type='bandpass',fs=10.):
     # design Elliptic filter:
 
-    [b,a] = signal.butter(filt_order,[freq/fs for freq in freq_range],btype=filt_type)
+    [b,a] = signal.butter(filt_order,[freq/(fs/2) for freq in freq_range],btype=filt_type)
     
     filtered_trace = signal.filtfilt(b,a,ephys,axis=0)
     return filtered_trace
