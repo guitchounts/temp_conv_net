@@ -25,6 +25,20 @@ def filter(ephys,freq_range,filt_order = 4,filt_type='bandpass',fs=10.):
     filtered_trace = signal.filtfilt(b,a,ephys,axis=0)
     return filtered_trace
 
+def get_head_stop(head_data): ## head_data.shape = e.g. (1000000, 4)
+    all_diffs = []
+    head_names = range(4) #['ox','oy','oz','ax','ay','az']    
+    for head_name in head_names:
+        all_diffs.append(np.where(np.diff(head_data[:,head_name],10) == 0 )[0])
+        
+    all_zeros = reduce(np.intersect1d, (all_diffs))
+    if len(all_zeros) == 0:
+        stop = head_data.shape[0] + 1
+    else:
+        stop = all_zeros[0]
+        
+    return stop
+
 def run_decoding(lfp_path,head_path,nn_params,save_dir):
 
     ## get and format data
@@ -119,14 +133,20 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
     # e.g.  (1, 16, 1000000) (1000000, 4)
     ## two-hour chunks at 100 samples / sec = 
     two_hour_lim = int(100*60*60*2)
-    num_chunks = int(2e6 / two_hour_lim) ## how many two-hour chunks of decoding can we do using this dataset?
+
+    ## in case the BNO recording failed and recorded a bunch of zeros, cut out those zeros from the end:
+    start,stop = 0,get_head_stop(head_signals)
+    head_signals = head_signals[start:stop,:]
+    tetrodes = tetrodes[:,:,start:stop]
+
+    num_chunks = int(head_signals.shape[0] / two_hour_lim) ## how many two-hour chunks of decoding can we do using this dataset?
 
     # split tetrodes and head data into chunks:
     chunk_indexes = [two_hour_lim*i for i in range(num_chunks+1)] ## get indexes like [0, 720000] [720000, 1440000] [1440000, 2160000]
 
     chunk_indexes = [[v, w] for v, w in zip(chunk_indexes[:-1], chunk_indexes[1:])] # reformat to one list
 
-    hemispheres = ['left','right']
+    hemispheres = ['left','right'] # 4/30/18 1051pm changed - was wrong (right then left is wrong)
 
     all_tetrodes = [tetrodes[:,:,chunk_indexes[chunk][0]:chunk_indexes[chunk][1]] for chunk in range(num_chunks)  ] ## list of 1x16x720000 chunks 
     all_head_signals = [head_signals[chunk_indexes[chunk][0]:chunk_indexes[chunk][1],:] for chunk in range(num_chunks)  ]
