@@ -12,6 +12,7 @@ from TempConv import determine_fit
 from scipy import stats,signal
 from skimage import exposure
 import json
+from functools import reduce
 # In[9]:
 
 
