@@ -8,6 +8,7 @@ from metrics_helper import do_the_thing
 import keras.backend as K
 from sklearn.preprocessing import Normalizer
 from sklearn import linear_model
+from sklearn.externals import joblib
 
 def modified_mse(y_true, y_pred): #### modified MSE loss function for absolute yaw data (0-360 values wrap around)
     
@@ -192,6 +193,9 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0,model_
         X_train = X_train.reshape(X_train.shape[0],(X_train.shape[1]*X_train.shape[2]))
         X_test = X_test.reshape(X_test.shape[0],(X_test.shape[1]*X_test.shape[2]))
         model.fit(X_train,y_train)
+
+        
+
     else:
         model.fit(
             X_train, 
@@ -224,6 +228,10 @@ def determine_fit(X, y, y_key, nn_params,save_dir, plot_result=True,model_type =
     
     y_test_hat = model.predict(X_test)
     
+    if model_type == 'ridge':
+        # save the model:
+        joblib.dump(model, save_dir + str(y_key) + '_Ridge.pkl') 
+
     R2s, rs = do_the_thing(
         y_test, 
         y_test_hat, 
