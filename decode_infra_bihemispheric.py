@@ -18,26 +18,26 @@ from functools import reduce
 
 
 def filter(ephys,freq_range,filt_order = 4,filt_type='bandpass',fs=10.):
-    
+
     # design Elliptic filter:
 
     [b,a] = signal.butter(filt_order,[freq/(fs/2) for freq in freq_range],btype=filt_type)
-    
+
     filtered_trace = signal.filtfilt(b,a,ephys,axis=0)
     return filtered_trace
 
 def get_head_stop(head_data): ## head_data.shape = e.g. (1000000, 4)
     all_diffs = []
-    head_names = range(4) #['ox','oy','oz','ax','ay','az']    
+    head_names = range(4) #['ox','oy','oz','ax','ay','az']
     for head_name in head_names:
         all_diffs.append(np.where(np.diff(head_data[:,head_name],10) == 0 )[0])
-        
+
     all_zeros = reduce(np.intersect1d, (all_diffs))
     if len(all_zeros) == 0:
         stop = head_data.shape[0] + 1
     else:
         stop = all_zeros[0]
-        
+
     return stop
 
 def run_decoding(lfp_path,head_path,nn_params,save_dir):
@@ -61,10 +61,10 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
 
 
     if data_name.find('lfp_power') == 1:
-        ### take average of LFP bands in each tetrode: 
+        ### take average of LFP bands in each tetrode:
         avgd_neural_data = np.empty([64,neural_data.shape[1]])
         fs = 10.
-    else: 
+    else:
         fs = 100.
 
     ##### shuffle control:  neural_data = np.random.permutation(neural_data.T).T
@@ -84,7 +84,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
     print('head_signals shape: ', head_signals.shape)
 
 
-    
+
     xyz = filter(np.sqrt(head_signals[:,0]**2 + head_signals[:,1]**2 + head_signals[:,2]**2     ),[1],filt_type='lowpass',fs=fs)
 
     ## lowpass filter:
@@ -104,7 +104,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
     # dx = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,6]))),[1],filt_type='lowpass',fs=fs  )      )
     # dy = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,7]))),[1],filt_type='lowpass',fs=fs  )      )
     # dz = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,8]))),[1],filt_type='lowpass',fs=fs  )      )
-    
+
     # filt_roll = filter(head_signals[:,7],[1.],fs=fs,filt_type='lowpass')
     # filt_pitch = filter(head_signals[:,8],[1.],fs=fs,filt_type='lowpass')
 
@@ -113,7 +113,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
 
     head_signals = np.vstack([head_signals[:,6],head_signals[:,7],head_signals[:,8], xyz]).T
     #head_signals = np.vstack([dx,dy,dz]).T
-    #head_signals_int = ['left','right']  
+    #head_signals_int = ['left','right']
 
 
 
@@ -129,10 +129,10 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
     #     print('Reducing Data Size Down to %d Samples' % limit)
     #     tetrodes  = tetrodes[:,:,0:limit]
     #     head_signals = head_signals[0:limit,:]
-        
-    print('The SHAPE of tetrodes and head_signals = ', tetrodes.shape,head_signals.shape) 
+
+    print('The SHAPE of tetrodes and head_signals = ', tetrodes.shape,head_signals.shape)
     # e.g.  (1, 16, 1000000) (1000000, 4)
-    ## two-hour chunks at 100 samples / sec = 
+    ## two-hour chunks at 100 samples / sec =
     two_hour_lim = int(100*60*60*2)
 
     ## in case the BNO recording failed and recorded a bunch of zeros, cut out those zeros from the end:
@@ -149,7 +149,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
 
     hemispheres = ['left','right'] # 4/30/18 1051pm changed - was wrong (right then left is wrong)
 
-    all_tetrodes = [tetrodes[:,:,chunk_indexes[chunk][0]:chunk_indexes[chunk][1]] for chunk in range(num_chunks)  ] ## list of 1x16x720000 chunks 
+    all_tetrodes = [tetrodes[:,:,chunk_indexes[chunk][0]:chunk_indexes[chunk][1]] for chunk in range(num_chunks)  ] ## list of 1x16x720000 chunks
     all_head_signals = [head_signals[chunk_indexes[chunk][0]:chunk_indexes[chunk][1],:] for chunk in range(num_chunks)  ]
 
 
@@ -157,16 +157,16 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
 
     model_type = config['config']['model_type']
 
-    
+
 
     # iterate Xs
 
     for chunk in range(num_chunks):
-            
-        stats = {}            
-        for tetrode_idx in range(tetrodes.shape[0]): ### should be range(2) for tetrodes split into left and right hemispheres. first = RH, second = LH. 
+
+        stats = {}
+        for tetrode_idx in range(tetrodes.shape[0]): ### should be range(2) for tetrodes split into left and right hemispheres. first = RH, second = LH.
             tetrode = all_tetrodes[chunk][tetrode_idx].T  # tetrodes[tetrode_idx].T
-            
+
             left_right_save_dir = save_dir + str(chunk) + '/' + hemispheres[tetrode_idx] + '/' ### make a /1/left/ and /1/right, /2/left/ and /2/right etc subdir for saving
             if not os.path.exists(left_right_save_dir):
                 os.makedirs(left_right_save_dir)
@@ -177,22 +177,22 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
                     'R2s' : [],
                     'rs' : []
                 }
-                
+
                 for i in range(nn_params['nb_trains']):
                     head_signal = all_head_signals[chunk][:,head_signal_idx] ###  head_signals[:,head_signal_idx]
 
                     print('***************** Running Decoding on Chunk %d, %s Hemisphere' % (chunk,hemispheres[tetrode_idx]))
-                    
+
 
                     R2, r = determine_fit(tetrode, head_signal, [head_signals_int[head_signal_idx]], nn_params, left_right_save_dir,model_type=model_type)
-                    
+
                     R2r_arr['R2s'].append(R2[0])
                     R2r_arr['rs'].append(r[0])
-                
+
                 stats['tetrode_{}_head_signal_{}'.format(tetrode_idx, head_signal_idx)] = R2r_arr
                 print(stats)
 
-    
+
 
 
 
@@ -226,7 +226,7 @@ if __name__ == "__main__":
 # mkdir 031218_mua && cd .\031218_mua &&
 # python "C:\Users\Grigori Guitchounts\Documents\GitHub\temp_conv_net\decode_infra_all_lfp.py" ..\mua_firing_rates_100hz.hdf5 ..\all_head_data_100hz.hdf5 &&
 
-    #### assuming we're in the GratXXX directory. 
+    #### assuming we're in the GratXXX directory.
     input_file_path = os.getcwd()
     all_files = []
     for file in os.listdir(input_file_path):
@@ -234,11 +234,11 @@ if __name__ == "__main__":
                 all_files.append(file)
     all_files = np.asarray(all_files)
 
-    for fil in all_files:
+    for fil in all_files[-1::-1]:
 
         save_dir = './' + fil + '/' + config['config']['experiment'] + '/'
 
-        
+
 
         neural_path = './' + fil + '/' + config['config']['neural_data']
         head_path = './' + fil + '/' + config['config']['head_data']
@@ -247,29 +247,10 @@ if __name__ == "__main__":
         print('*************************** Neural Data from %s ************************************' % neural_path)
         print('*************************** Head Data from %s **************************************' % head_path)
         print('************************************************************************************')
-        
+
 
         if os.path.exists(head_path): #### make sure the experiment directory has the neural/head data:
             if os.path.exists(neural_path):
                 if not os.path.exists(save_dir):
                     os.makedirs(save_dir)
                 run_decoding(neural_path,head_path,config['nn_params'],save_dir)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
