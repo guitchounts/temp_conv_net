@@ -191,7 +191,7 @@ if __name__ == "__main__":
                 all_files.append(file)
     all_files = np.asarray(all_files)
 
-    for fil in ['636510937083046658']: # all_files:
+    for fil in all_files:
 
         save_dir = './' + fil + '/' + config['config']['experiment'] + '/'
 
