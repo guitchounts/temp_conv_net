@@ -14,8 +14,8 @@ def get_R2(y_valid,y_hat):
 
 def analyze_results(y_valids, y_hats):
     assert y_valids.shape == y_hats.shape
-    R2s = [get_R2(y_valids[:,i], y_hats[:,i]) for i in range(y_valids.shape[1])]
-    rs = [pearsonr(y_valids[:,i], y_hats[:,i])[0] for i in range(y_valids.shape[1])]
+    R2s = [get_R2(y_valids, y_hats)] #### was R2s = [get_R2(y_valids[:,i], y_hats[:,i]) for i in range(y_valids.shape[1])]
+    rs = [pearsonr(y_valids, y_hats)[0]]
     return R2s, rs
 
 def plot_results(y_valids, y_hats, y_names, R2s, rs,save_dir, model_name='GRU'):
