@@ -25,6 +25,9 @@ def plot_results(y_valids, y_hats, y_names, R2s, rs,save_dir, model_name='GRU'):
     
     gs = gridspec.GridSpec(num_figs, 7)
 
+    y_valids = np.atleast_2d(y_valids).T
+    y_hats = np.atleast_2d(y_hats).T
+
     for i in range(num_figs):
         y_valid = y_valids[:,i]
         y_valid_predicted = y_hats[:,i]
