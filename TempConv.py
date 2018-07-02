@@ -195,8 +195,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0,model_
     # y_test = y_test[sampled_dx_idx_test,:]
     # X_test = X_test[sampled_dx_idx_test,:,:]
     # print('Shapes of X_train and y_train after resampling:', X_train.shape,y_train.shape)
-    print('y_train shape and raveled shape:', y_train.shape, np.ravel(y_train).shape)
-
+    
     early_stopping = EarlyStopping(
         monitor='val_loss', 
         min_delta=0, 
@@ -206,6 +205,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0,model_
     )
 
     if model_type == 'ridge' or model_type == 'lasso':
+        print('Reshaping X_train and X_test and fitting %s model' % model_type)
         #### X's are (time, window, channels), e.g. (13085, 200, 16). Reshape for the linear model:
         X_train = X_train.reshape(X_train.shape[0],(X_train.shape[1]*X_train.shape[2]))
         X_test = X_test.reshape(X_test.shape[0],(X_test.shape[1]*X_test.shape[2]))
