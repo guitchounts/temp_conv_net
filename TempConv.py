@@ -40,14 +40,29 @@ def get_turn_idx(dx):
 
     return left_starts,right_starts
 
-def make_ridgeCV_model():
+# def make_ridgeCV_model():
  
     
-    print('********************************** Making RidgeCV Model **********************************')
-    #Declare model
-    model = linear_model.RidgeCV(alphas=[0.1, 1.0, 10.0],normalize=True,fit_intercept=True)
+#     print('********************************** Making RidgeCV Model **********************************')
+#     #Declare model
+#     model = linear_model.RidgeCV(alphas=[0.1, 1.0, 10.0],normalize=True,fit_intercept=True)
+  
+#     return model
+
+def make_linear_model(model_type='ridge'):
+ 
+    if model_type == 'ridge':
+        print('********************************** Making RidgeCV Model **********************************')
+        #Declare model
+        model = linear_model.RidgeCV(alphas=[0.1, 1.0, 10.0],normalize=True,fit_intercept=True)
+    elif model_type == 'lasso':
+
+        print('********************************** Making LassoCV Model **********************************')
+        #Declare model
+        model = linear_model.LassoCV(alphas=[0.1, 1.0, 10.0],normalize=True,fit_intercept=True)
   
     return model
+
 
 def make_timeseries_regressor(nn_params, nb_input_series=1, nb_outputs=1,custom_loss=0):
     model = Sequential()
@@ -145,10 +160,10 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0,model_
         print('\n\nTimeseries ({} samples by {} series):\n'.format(nb_samples, nb_series))
         print('\n\nExample input feature:', X[0], '\n\nExample output labels:', y[0])
     
-    if model_type == 'ridge':
+    if model_type == 'ridge' or model_type == 'lasso':
         print(model_type)
-        print('Making Ridge Model')
-        model = make_ridgeCV_model()
+        print('Making Linear %s Model' % model_type)
+        model = make_linear_model(model_type=model_type)
         
     else:
         print(model_type)
@@ -188,7 +203,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0,model_
         mode='auto'
     )
 
-    if model_type == 'ridge':
+    if model_type == 'ridge' or model_type == 'lasso':
         #### X's are (time, window, channels), e.g. (13085, 200, 16). Reshape for the linear model:
         X_train = X_train.reshape(X_train.shape[0],(X_train.shape[1]*X_train.shape[2]))
         X_test = X_test.reshape(X_test.shape[0],(X_test.shape[1]*X_test.shape[2]))
