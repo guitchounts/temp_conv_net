@@ -64,10 +64,10 @@ def plot_results(y_valids, y_hats, y_names, R2s, rs,save_dir, model_name='GRU'):
     sns.despine(left=True,bottom=True)
 
     plt.tight_layout()
-    plt.close(f)
+    
     f.savefig(save_dir + model_name + '.png')
     plt.close(f)
-    
+
     return plt
 
 def do_the_thing(y_valids, y_hats, y_names, model_name,save_dir, plot_result=False):
