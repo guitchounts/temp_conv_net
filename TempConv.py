@@ -59,7 +59,7 @@ def make_linear_model(model_type='ridge'):
 
         print('********************************** Making LassoCV Model **********************************')
         #Declare model
-        model = linear_model.LassoCV(alphas=[0.1, 1.0, 10.0],normalize=True,fit_intercept=True)
+        model = linear_model.LassoCV(n_alphas =3,normalize=True,fit_intercept=True) #
   
     return model
 
