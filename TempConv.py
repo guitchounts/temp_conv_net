@@ -207,7 +207,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0,model_
         #### X's are (time, window, channels), e.g. (13085, 200, 16). Reshape for the linear model:
         X_train = X_train.reshape(X_train.shape[0],(X_train.shape[1]*X_train.shape[2]))
         X_test = X_test.reshape(X_test.shape[0],(X_test.shape[1]*X_test.shape[2]))
-        model.fit(X_train,y_train)
+        model.fit(X_train,np.ravel(y_train))
 
         
 
@@ -243,9 +243,9 @@ def determine_fit(X, y, y_key, nn_params,save_dir, plot_result=True,model_type =
     
     y_test_hat = model.predict(X_test)
     
-    if model_type == 'ridge':
+    if model_type == 'ridge' or model_type == 'lasso':
         # save the model:
-        joblib.dump(model, save_dir + str(y_key) + '_Ridge.pkl') 
+        joblib.dump(model, save_dir + str(y_key) + '_%s.pkl' % model_type) 
 
     R2s, rs = do_the_thing(
         y_test, 
