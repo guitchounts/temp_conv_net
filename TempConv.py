@@ -182,7 +182,8 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0,model_
     
     X_train, X_test, y_train, y_test = split_data(X, y, 0.5,shuffle=shuffle)
     
-
+    y_train = np.ravel(y_train)
+    y_test = np.ravel(y_test)
     # print('###################### resampling y ######################')
 
     # sampled_dx_idx_train = sample_dx_uniformly(y_train,num_points=5000)
@@ -208,7 +209,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0,model_
         #### X's are (time, window, channels), e.g. (13085, 200, 16). Reshape for the linear model:
         X_train = X_train.reshape(X_train.shape[0],(X_train.shape[1]*X_train.shape[2]))
         X_test = X_test.reshape(X_test.shape[0],(X_test.shape[1]*X_test.shape[2]))
-        model.fit(X_train,np.ravel(y_train))
+        model.fit(X_train,y_train)
 
         
 
