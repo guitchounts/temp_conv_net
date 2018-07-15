@@ -128,14 +128,21 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0,model_
     X, y = make_timeseries_instances(timeseries1, timeseries2, nn_params['window'], nn_params['offset'])
     print('Shapes of X and y after making timeseries instance:', X.shape,y.shape)
 
-    #print('###################### resampling y ######################')
 
-    # sampled_dx_idx = sample_dx_uniformly(y)
-    # sampled_dx_idx = np.sort(sampled_dx_idx)
-    
-    # y = y[sampled_dx_idx,:]
-    # X = X[sampled_dx_idx,:,:]
-    # print('Shapes of X and y after resampling:', X.shape,y.shape)
+    if 'resample' in nn_params.keys():
+        resample = nn_params['resample']
+    else:
+        resample = 0
+        
+    if resample == 1:
+        print('###################### resampling y ######################')
+
+        sampled_dx_idx = sample_dx_uniformly(y)
+        sampled_dx_idx = np.sort(sampled_dx_idx)
+        
+        y = y[sampled_dx_idx,:]
+        X = X[sampled_dx_idx,:,:]
+        print('Shapes of X and y after resampling:', X.shape,y.shape)
     
     print(y.shape)
     print(X.shape)

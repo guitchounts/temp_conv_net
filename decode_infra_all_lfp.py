@@ -84,28 +84,33 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
 
     # dx_pos[np.where(dx > 0)[0]] = dx[np.where(dx > 0)[0]]
 
+    if 'dx' in  nn_params.keys():
 
-    # dx = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,6]))),[1],filt_type='lowpass',fs=fs  )      )
-    # dy = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,7]))),[1],filt_type='lowpass',fs=fs  )      )
-    # dz = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,8]))),[1],filt_type='lowpass',fs=fs  )      )
-
+        dx = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,6]))),[1],filt_type='lowpass',fs=fs  )      )
+        dy = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,7]))),[1],filt_type='lowpass',fs=fs  )      )
+        dz = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,8]))),[1],filt_type='lowpass',fs=fs  )      )
+        head_signals = np.vstack([dx,dy,dz]).T
+        head_signals_int = ['dyaw', 'droll', 'dpitch']
+    else:
+        head_signals = np.vstack([head_signals[:,6],head_signals[:,7],head_signals[:,8], xyz]).T
+        head_signals_int = ['yaw_abs', 'roll_abs', 'pitch_abs', 'total_acc']
     # filt_roll = filter(head_signals[:,7],[1.],fs=fs,filt_type='lowpass')
     # filt_pitch = filter(head_signals[:,8],[1.],fs=fs,filt_type='lowpass')
 
     # lowpass_dy = np.gradient(filt_roll)
     # lowpass_dz = np.gradient(filt_pitch)
 
-    head_signals = np.vstack([head_signals[:,6],head_signals[:,7],head_signals[:,8], xyz]).T
-    #head_signals = np.vstack([dx,dy,dz]).T
+    
+    
     #head_signals_int = ['left','right']
 
 
 
     head_signals_keys = list(head_signals_h5.keys())[0:9][idx_start:idx_stop]
-    head_signals_int = ['yaw_abs', 'roll_abs', 'pitch_abs', 'total_acc']
+    
     #head_signals_int = ['d_yaaw', 'd_roll','d_pitch']
 
-    print('head_signals_keys intuitive: ', head_signals_int)
+    #print('head_signals_keys intuitive: ', head_signals_int)
 
     ## limit signals to 1e6 samples:
     limit = int(1e6)
