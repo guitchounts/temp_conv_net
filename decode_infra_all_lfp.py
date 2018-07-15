@@ -91,9 +91,11 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
             dz = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,8]))),[1],filt_type='lowpass',fs=fs  )      )
             head_signals = np.vstack([dx,dy,dz]).T
             head_signals_int = ['dyaw', 'droll', 'dpitch']
+            limit = int(1e7)
     else:
         head_signals = np.vstack([head_signals[:,6],head_signals[:,7],head_signals[:,8], xyz]).T
         head_signals_int = ['yaw_abs', 'roll_abs', 'pitch_abs', 'total_acc']
+        limit = int(1e6)
     # filt_roll = filter(head_signals[:,7],[1.],fs=fs,filt_type='lowpass')
     # filt_pitch = filter(head_signals[:,8],[1.],fs=fs,filt_type='lowpass')
 
@@ -113,7 +115,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
     #print('head_signals_keys intuitive: ', head_signals_int)
 
     ## limit signals to 1e6 samples:
-    limit = int(1e6)
+    
     if neural_data.shape[1] > limit:
         print('Reducing Data Size Down to %d Samples' % limit)
         tetrodes  = tetrodes[:,:,0:limit]

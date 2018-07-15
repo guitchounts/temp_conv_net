@@ -6,7 +6,7 @@ import matplotlib.gridspec as gridspec
 import seaborn as sns
 sns.set_style('white')
 
-def sample_dx_uniformly(derivative,num_points=10000):
+def sample_dx_uniformly(derivative,num_points=20000):
     ################### sample the dx distribution evenly: ####################
     derivative = np.squeeze(derivative)
     bins = 10000
