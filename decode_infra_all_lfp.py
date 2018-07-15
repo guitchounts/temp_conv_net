@@ -84,13 +84,13 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
 
     # dx_pos[np.where(dx > 0)[0]] = dx[np.where(dx > 0)[0]]
 
-    if 'dx' in  nn_params.keys():
-
-        dx = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,6]))),[1],filt_type='lowpass',fs=fs  )      )
-        dy = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,7]))),[1],filt_type='lowpass',fs=fs  )      )
-        dz = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,8]))),[1],filt_type='lowpass',fs=fs  )      )
-        head_signals = np.vstack([dx,dy,dz]).T
-        head_signals_int = ['dyaw', 'droll', 'dpitch']
+    if 'dx' in nn_params.keys():
+        if nn_params['dx'] == 1:
+            dx = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,6]))),[1],filt_type='lowpass',fs=fs  )      )
+            dy = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,7]))),[1],filt_type='lowpass',fs=fs  )      )
+            dz = np.gradient(filter(  np.rad2deg(np.unwrap(np.deg2rad(head_signals[:,8]))),[1],filt_type='lowpass',fs=fs  )      )
+            head_signals = np.vstack([dx,dy,dz]).T
+            head_signals_int = ['dyaw', 'droll', 'dpitch']
     else:
         head_signals = np.vstack([head_signals[:,6],head_signals[:,7],head_signals[:,8], xyz]).T
         head_signals_int = ['yaw_abs', 'roll_abs', 'pitch_abs', 'total_acc']
