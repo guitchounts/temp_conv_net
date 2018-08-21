@@ -38,6 +38,7 @@ def get_head_stop(head_data): ## head_data.shape = e.g. (1000000, 4)
         stop = all_zeros[0]
 
     return stop
+
 def run_decoding(lfp_path,head_path,nn_params,save_dir):
 
     ## get and format data
@@ -183,7 +184,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
                 for i in range(nn_params['nb_trains']):
                     head_signal = all_head_signals[chunk][:,head_signal_idx] ###  head_signals[:,head_signal_idx]
 
-                    print('***************** Running Decoding on Chunk %d' % (chunk)
+                    print('***************** Running Decoding on Chunk %d' % (chunk))
 
 
                     R2, r = determine_fit(tetrode, head_signal, [head_signals_int[head_signal_idx]], nn_params, chunk_save_dir,model_type=model_type)
@@ -215,17 +216,17 @@ if __name__ == "__main__":
 
     # lfp_path = sys.argv[1]
     # head_path = sys.argv[2]
-    config_file = sys.argv[1]
+    config_file = sys.argv[1] 
 
     with open(config_file) as json_data_file:
         config = json.load(json_data_file)
 
 
-# cd  "C:\Users\Grigori Guitchounts\Dropbox (coxlab)\Ephys\Data" \ &&
-# cd .\636505099725591062\ &&
-# cd &&
-# mkdir 031218_mua && cd .\031218_mua &&
-# python "C:\Users\Grigori Guitchounts\Documents\GitHub\temp_conv_net\decode_infra_all_lfp.py" ..\mua_firing_rates_100hz.hdf5 ..\all_head_data_100hz.hdf5 &&
+    # cd  "C:\Users\Grigori Guitchounts\Dropbox (coxlab)\Ephys\Data" \ &&
+    # cd .\636505099725591062\ &&
+    # cd &&
+    # mkdir 031218_mua && cd .\031218_mua &&
+    # python "C:\Users\Grigori Guitchounts\Documents\GitHub\temp_conv_net\decode_infra_all_lfp.py" ..\mua_firing_rates_100hz.hdf5 ..\all_head_data_100hz.hdf5 &&
 
     #### assuming we're in the GratXXX directory.
     input_file_path = os.getcwd()
