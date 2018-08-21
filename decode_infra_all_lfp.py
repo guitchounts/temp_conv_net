@@ -25,6 +25,19 @@ def filter(ephys,freq_range,filt_order = 4,filt_type='bandpass',fs=10.):
     filtered_trace = signal.filtfilt(b,a,ephys,axis=0)
     return filtered_trace
 
+def get_head_stop(head_data): ## head_data.shape = e.g. (1000000, 4)
+    all_diffs = []
+    head_names = range(4) #['ox','oy','oz','ax','ay','az']
+    for head_name in head_names:
+        all_diffs.append(np.where(np.diff(head_data[:,head_name],10) == 0 )[0])
+
+    all_zeros = reduce(np.intersect1d, (all_diffs))
+    if len(all_zeros) == 0:
+        stop = head_data.shape[0] + 1
+    else:
+        stop = all_zeros[0]
+
+    return stop
 def run_decoding(lfp_path,head_path,nn_params,save_dir):
 
     ## get and format data
@@ -116,13 +129,30 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
 
     ## limit signals to 1e6 samples:
     
-    if neural_data.shape[1] > limit:
-        print('Reducing Data Size Down to %d Samples' % limit)
-        tetrodes  = tetrodes[:,:,0:limit]
-        head_signals = head_signals[0:limit,:]
+    # if neural_data.shape[1] > limit:
+    #     print('Reducing Data Size Down to %d Samples' % limit)
+    #     tetrodes  = tetrodes[:,:,0:limit]
+    #     head_signals = head_signals[0:limit,:]
 
     print('The SHAPE of tetrodes and head_signals = ', tetrodes.shape,head_signals.shape)
     # In[10]:
+    two_hour_lim = int(100*60*60*2)
+
+    ## in case the BNO recording failed and recorded a bunch of zeros, cut out those zeros from the end:
+    start,stop = 0,get_head_stop(head_signals)
+    head_signals = head_signals[start:stop,:]
+    tetrodes = tetrodes[:,:,start:stop]
+
+    num_chunks = int(head_signals.shape[0] / two_hour_lim) ## how many two-hour chunks of decoding can we do using this dataset?
+
+    # split tetrodes and head data into chunks:
+    chunk_indexes = [two_hour_lim*i for i in range(num_chunks+1)] ## get indexes like [0, 720000] [720000, 1440000] [1440000, 2160000]
+
+    chunk_indexes = [[v, w] for v, w in zip(chunk_indexes[:-1], chunk_indexes[1:])] # reformat to one list
+
+    all_tetrodes = [tetrodes[:,:,chunk_indexes[chunk][0]:chunk_indexes[chunk][1]] for chunk in range(num_chunks)  ] ## list of 1x16x720000 chunks
+    all_head_signals = [head_signals[chunk_indexes[chunk][0]:chunk_indexes[chunk][1],:] for chunk in range(num_chunks)  ]
+
 
 
     stats = {}
@@ -131,32 +161,39 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
 
     # In[12]:
 
-    # iterate Xs
-    for tetrode_idx in range(tetrodes.shape[0]):
-        tetrode = tetrodes[tetrode_idx].T
+     # iterate Xs
 
-        #if tetrode_idx >= 1: break
+    for chunk in range(num_chunks):
 
-        # iterate ys
-        for head_signal_idx in range(head_signals.shape[1]):
-            R2r_arr = {
-                'R2s' : [],
-                'rs' : []
-            }
+        stats = {}
+        for tetrode_idx in range(tetrodes.shape[0]): ### should be range(2) for tetrodes split into left and right hemispheres. first = RH, second = LH.
+            tetrode = all_tetrodes[chunk][tetrode_idx].T  # tetrodes[tetrode_idx].T
 
-            for i in range(nn_params['nb_trains']): # replace with k-fold? n k-folds?
-                head_signal = head_signals[:,head_signal_idx]
-                R2, r = determine_fit(tetrode, head_signal, [head_signals_int[head_signal_idx]], nn_params, save_dir,model_type=model_type)
+            chunk_save_dir = save_dir + str(chunk) + '/' ### make a /1/left/ and /1/right, /2/left/ and /2/right etc subdir for saving
+            if not os.path.exists(chunk_save_dir):
+                os.makedirs(chunk_save_dir)
 
-                R2r_arr['R2s'].append(R2[0])
-                R2r_arr['rs'].append(r[0])
+            # iterate ys
+            for head_signal_idx in range(head_signals.shape[1]): ## four for yaw, roll, pitch, and total_acc
+                R2r_arr = {
+                    'R2s' : [],
+                    'rs' : []
+                }
 
-            stats['tetrode_{}_head_signal_{}'.format(tetrode_idx, head_signal_idx)] = R2r_arr
+                for i in range(nn_params['nb_trains']):
+                    head_signal = all_head_signals[chunk][:,head_signal_idx] ###  head_signals[:,head_signal_idx]
+
+                    print('***************** Running Decoding on Chunk %d' % (chunk)
 
 
-    # In[ ]:
+                    R2, r = determine_fit(tetrode, head_signal, [head_signals_int[head_signal_idx]], nn_params, chunk_save_dir,model_type=model_type)
 
-    print(stats)
+                    R2r_arr['R2s'].append(R2[0])
+                    R2r_arr['rs'].append(r[0])
+
+                stats['tetrode_{}_head_signal_{}'.format(tetrode_idx, head_signal_idx)] = R2r_arr
+                print(stats)
+
 
 
 
