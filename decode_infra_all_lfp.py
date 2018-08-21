@@ -145,7 +145,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
     head_signals = head_signals[start:stop,:]
     tetrodes = tetrodes[:,:,start:stop]
 
-    num_chunks = int(head_signals.shape[0] / two_hour_lim) ## how many two-hour chunks of decoding can we do using this dataset?
+    num_chunks = max(1,int(head_signals.shape[0] / two_hour_lim)) ## how many two-hour chunks of decoding can we do using this dataset?
 
     # split tetrodes and head data into chunks:
     chunk_indexes = [two_hour_lim*i for i in range(num_chunks+1)] ## get indexes like [0, 720000] [720000, 1440000] [1440000, 2160000]
