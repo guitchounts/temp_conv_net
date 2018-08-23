@@ -85,6 +85,9 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
 
 
     xyz = filter(np.sqrt(head_signals[:,0]**2 + head_signals[:,1]**2 + head_signals[:,2]**2     ),[1],filt_type='lowpass',fs=fs)
+    ## check for NaNs in xyz and replace them with zeros:
+    xyz[np.where(np.isnan(xyz))[0]] = 0.
+
 
     ## lowpass filter:
     for x in range(6,9):
