@@ -8,8 +8,8 @@ sns.set_style('white')
 
 def sample_dx_uniformly(derivative,num_points=100000):
     ################### sample the dx distribution evenly: ####################
-    print('len(derivative), num_points = ', len(derivative), num_points)
-    if len(derivative) > num_points:
+    #print('len(derivative), num_points = ', len(derivative), num_points)
+    if len(derivative) < num_points:
         num_points = len(derivative)
 
     derivative = np.squeeze(derivative)
