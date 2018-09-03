@@ -8,6 +8,8 @@ sns.set_style('white')
 
 def sample_dx_uniformly(derivative,num_points=100000):
     ################### sample the dx distribution evenly: ####################
+    if len(derivative) > num_points:
+        num_points = len(derivative)
     derivative = np.squeeze(derivative)
     bins = 10000
     hist,edges = np.histogram(derivative,bins=bins,normed=True)
