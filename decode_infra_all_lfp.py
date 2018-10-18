@@ -221,6 +221,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
                 if y_key == 'yaw_abs':
                     print('Modeling YAW as complex number!!')
                     head_signal = np.exp( 1j * np.deg2rad(head_signal) )
+                    print('compelx head_signal shape =', head_signal.shape)
                     head_signal = [head_signal.real, head_signal.imag]
 
                     y_key = ['yaw_real','yaw_imag']
@@ -232,7 +233,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
 
                     print('***************** Running Decoding on Chunk %d' % (chunk))
 
-
+                    print('head_signal.shape = ', head_signal)
                     R2, r = determine_fit(tetrode, head_signal, [y_key[i]], nn_params, chunk_save_dir,model_type=model_type)
 
                     R2r_arr['R2s'].append(R2[0])
