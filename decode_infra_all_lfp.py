@@ -179,10 +179,10 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
     chunk_indexes = [two_hour_lim*i for i in range(num_chunks+1)] ## get indexes like [0, 720000] [720000, 1440000] [1440000, 2160000]
 
     chunk_indexes = [[v, w] for v, w in zip(chunk_indexes[:-1], chunk_indexes[1:])] # reformat to one list
-
+    print('chunk_indexes = ', chunk_indexes)
     all_tetrodes = [tetrodes[:,:,chunk_indexes[chunk][0]:chunk_indexes[chunk][1]] for chunk in range(num_chunks)  ] ## list of 1x16x720000 chunks
     all_head_signals = [head_signals[chunk_indexes[chunk][0]:chunk_indexes[chunk][1],:] for chunk in range(num_chunks)  ]
-
+    print('all_head_signals[chunk] shape after chunking.   =', all_head_signals[chunk].shape)
 
 
     stats = {}
