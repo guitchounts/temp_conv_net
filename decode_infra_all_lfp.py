@@ -178,6 +178,9 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
             if not os.path.exists(chunk_save_dir):
                 os.makedirs(chunk_save_dir)
 
+            ## see in params if you'd like to only decode a specific signal (e.g. yaw or roll or pitch)
+
+
             # iterate ys
             for head_signal_idx in range(head_signals.shape[1]): ## four for yaw, roll, pitch, and total_acc
                 R2r_arr = {
@@ -185,13 +188,28 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
                     'rs' : []
                 }
 
-                for i in range(nn_params['nb_trains']):
-                    head_signal = all_head_signals[chunk][:,head_signal_idx] ###  head_signals[:,head_signal_idx]
+                y_key = [head_signals_int[head_signal_idx]]
+                num_trains = range(nn_params['nb_trains'])
+                
+
+                head_signal = all_head_signals[chunk][:,head_signal_idx] ###  head_signals[:,head_signal_idx]
+
+                if y_key == 'yaw_abs':
+                    print('Modeling YAW as complex number!!')
+                    head_signal = np.exp( 1j * np.deg2rad(head_signal) )
+                    head_signal = [head_signal.real, head_signal.imag]
+
+                    y_key = ['yaw_real','yaw_imag']
+                    num_trains = range(2)
+
+                for i in num_trains:
+
+                    
 
                     print('***************** Running Decoding on Chunk %d' % (chunk))
 
 
-                    R2, r = determine_fit(tetrode, head_signal, [head_signals_int[head_signal_idx]], nn_params, chunk_save_dir,model_type=model_type)
+                    R2, r = determine_fit(tetrode, head_signal, [y_key[i]], nn_params, chunk_save_dir,model_type=model_type)
 
                     R2r_arr['R2s'].append(R2[0])
                     R2r_arr['rs'].append(r[0])
