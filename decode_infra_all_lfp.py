@@ -135,6 +135,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
         else:
 
             head_signals = np.vstack([head_signals[:,6],head_signals[:,7],head_signals[:,8], head_signals[:,9]]).T
+            print('after NOT decode_signals, head_signals.shape = ',head_signals.shape)
             head_signals_int = ['yaw_abs', 'roll_abs', 'pitch_abs', 'total_acc']
         
 
