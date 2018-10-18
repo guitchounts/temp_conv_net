@@ -30,7 +30,7 @@ def get_head_stop(head_data): ## head_data.shape = e.g. (1000000, 4)
     all_diffs = []
     head_names = range(head_data.shape[1])  #['ox','oy','oz','ax','ay','az']
     for head_name in head_names:
-        all_diffs.append(np.where(np.diff(head_data[:,head_name],10) == 0 )[0])
+        all_diffs.append(np.where(np.diff(head_data[:,head_name],20) == 0 )[0])
 
     all_zeros = reduce(np.intersect1d, (all_diffs))
     if len(all_zeros) == 0:
