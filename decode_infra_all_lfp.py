@@ -94,7 +94,8 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
         print('Filtering head signal %s' % list(head_signals_h5.keys())[x])
         head_signals[:,x] = filter(head_signals[:,x],[1],filt_type='lowpass',fs=fs)
 
-    head_signals = np.hstack([head_signals,xyz])
+    
+    head_signals = np.hstack([head_signals,np.atleast_2d(xyz).T])
     # dx_neg = np.empty(head_signals[:,3].shape)
     # dx_pos = np.empty(head_signals[:,3].shape)
     # dx = head_signals[:,3]
