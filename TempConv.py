@@ -241,11 +241,7 @@ def determine_fit(X, y, y_key, nn_params,save_dir, plot_result=True,model_type =
     #     custom_loss = 1
     #     print('Training on %s, using custom loss function' % y_key[0])
     
-    if y_key[0].find('yaw') == 0:
-        print('Running YAW as complex number!!!')
-        y = np.exp( 1j * np.deg2rad(y) ).real ### just taking the real component for now. multioutput regression later.  
-
-
+    
 
     model, X_train, X_test, y_train, y_test = evaluate_timeseries(
         X, 
