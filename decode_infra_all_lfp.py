@@ -130,7 +130,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
     
             
             head_signals = np.vstack([head_signals[:,x] for x in idx ]).T
-
+            print('after decode_signals, head_signals.shape = ',head_signals.shape)
 
         else:
 
