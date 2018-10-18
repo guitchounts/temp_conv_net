@@ -215,10 +215,12 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
                 y_key = [head_signals_int[head_signal_idx]]
                 num_trains = range(nn_params['nb_trains'])
                 
+                print('all_head_signals shape   =', all_head_signals.shape)
 
                 head_signal = all_head_signals[chunk][:,head_signal_idx] ###  head_signals[:,head_signal_idx]
-                print('head_signal shape before compleixfiying  =', head_signal.shape)
                 
+                print('head_signal shape before compleixfiying  =', head_signal.shape)
+
                 if  any("yaw_abs" in s for s in head_signals_int):
                     print('Modeling YAW as complex number!!')
                     head_signal = np.exp( 1j * np.deg2rad(head_signal) )
