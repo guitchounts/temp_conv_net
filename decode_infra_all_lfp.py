@@ -94,7 +94,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
         print('Filtering head signal %s' % list(head_signals_h5.keys())[x])
         head_signals[:,x] = filter(head_signals[:,x],[1],filt_type='lowpass',fs=fs)
 
-
+    head_signals = np.vstack([head_signals,xyz])
     # dx_neg = np.empty(head_signals[:,3].shape)
     # dx_pos = np.empty(head_signals[:,3].shape)
     # dx = head_signals[:,3]
@@ -111,8 +111,32 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
             head_signals_int = ['dyaw', 'droll', 'dpitch']
             limit = int(1e7)
     else:
-        head_signals = np.vstack([head_signals[:,6],head_signals[:,7],head_signals[:,8], xyz]).T
-        head_signals_int = ['yaw_abs', 'roll_abs', 'pitch_abs', 'total_acc']
+
+        
+        ## see in params if you'd like to only decode a specific signal (e.g. yaw or roll or pitch)
+        if 'decode_signals' in nn_params.keys():
+
+            head_signals_int = nn_params['decode_signals'].split(',')
+            idx = []
+            if 'yaw_abs' in head_signals_int:
+                idx.append(6)                
+            if 'roll_abs' in head_signals_int:
+                idx.append(7)                
+            if 'pitch_abs' in head_signals_int:
+                idx.append(8)                
+            if 'total_acc' in head_signals_int:
+                idx.append(9)
+    
+            
+            head_signals = np.vstack([head_signals[:,x] for x in idx ]).T
+
+
+        else:
+
+            head_signals = np.vstack([head_signals[:,6],head_signals[:,7],head_signals[:,8], head_signals[:,9]]).T
+            head_signals_int = ['yaw_abs', 'roll_abs', 'pitch_abs', 'total_acc']
+        
+
         limit = int(1e6)
     # filt_roll = filter(head_signals[:,7],[1.],fs=fs,filt_type='lowpass')
     # filt_pitch = filter(head_signals[:,8],[1.],fs=fs,filt_type='lowpass')
@@ -178,8 +202,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
             if not os.path.exists(chunk_save_dir):
                 os.makedirs(chunk_save_dir)
 
-            ## see in params if you'd like to only decode a specific signal (e.g. yaw or roll or pitch)
-
+           
 
             # iterate ys
             for head_signal_idx in range(head_signals.shape[1]): ## four for yaw, roll, pitch, and total_acc
