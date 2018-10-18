@@ -182,7 +182,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
     print('chunk_indexes = ', chunk_indexes)
     all_tetrodes = [tetrodes[:,:,chunk_indexes[chunk][0]:chunk_indexes[chunk][1]] for chunk in range(num_chunks)  ] ## list of 1x16x720000 chunks
     all_head_signals = [head_signals[chunk_indexes[chunk][0]:chunk_indexes[chunk][1],:] for chunk in range(num_chunks)  ]
-    print('all_head_signals[chunk] shape after chunking.   =', all_head_signals[chunk].shape)
+    print('all_head_signals[chunk] shape after chunking.   =', all_head_signals[0].shape)
 
 
     stats = {}
