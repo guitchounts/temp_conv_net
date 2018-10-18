@@ -218,7 +218,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
 
                 head_signal = all_head_signals[chunk][:,head_signal_idx] ###  head_signals[:,head_signal_idx]
 
-                if y_key.find('yaw_abs') != -1:
+                if  any("yaw_abs" in s for s in head_signals_int):
                     print('Modeling YAW as complex number!!')
                     head_signal = np.exp( 1j * np.deg2rad(head_signal) )
                     print('compelx head_signal shape =', head_signal.shape)
