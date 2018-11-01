@@ -229,10 +229,10 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
                     print('compelx head_signal shape =', head_signal.shape)
                     head_signal = [head_signal.real, head_signal.imag]
 
-                    y_key = ['yaw_real','yaw_imag']
-                    num_trains = range(2)
+                    #y_key = ['yaw_real','yaw_imag']
+                    #num_trains = range(2)
                 else:
-                    print(y_key)
+                    print('Modeling %s Not as complex number')
                     head_signal = [head_signal]
 
                 for i in num_trains:
@@ -241,7 +241,13 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
                     print('***************** Running Decoding on Chunk %d' % (chunk))
 
                     print('head_signal[i].shape = ', head_signal[i].shape)
-                    R2, r = determine_fit(tetrode, head_signal[i], [y_key[i]], nn_params, chunk_save_dir,model_type=model_type)
+                    
+                    if  any("yaw_abs" in s for s in y_key):
+                        new_keys = ['yaw_real','yaw_imag']
+                        for j in range(2):
+                            R2, r = determine_fit(tetrode, head_signal[i], [new_keys[j]], nn_params, chunk_save_dir,model_type=model_type)
+                    else:
+                        R2, r = determine_fit(tetrode, head_signal[i], [y_key], nn_params, chunk_save_dir,model_type=model_type)
 
                     R2r_arr['R2s'].append(R2[0])
                     R2r_arr['rs'].append(r[0])
