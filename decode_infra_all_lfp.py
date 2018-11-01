@@ -245,7 +245,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
                     for j in range(2):
                         R2, r = determine_fit(tetrode, head_signal[j], [new_keys[j]], nn_params, chunk_save_dir,model_type=model_type)
                 else:
-                    R2, r = determine_fit(tetrode, head_signal, [y_key], nn_params, chunk_save_dir,model_type=model_type)
+                    R2, r = determine_fit(tetrode, head_signal, y_key, nn_params, chunk_save_dir,model_type=model_type)
 
                 R2r_arr['R2s'].append(R2[0])
                 R2r_arr['rs'].append(r[0])
