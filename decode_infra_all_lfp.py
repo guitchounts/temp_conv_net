@@ -238,7 +238,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
                 #for i in num_trains:
                 print('***************** Running Decoding on Chunk %d' % (chunk))
 
-                print('head_signal.shape = ', head_signal.shape)
+                #print('head_signal.shape = ', head_signal.shape)
                 
                 if  any("yaw_abs" in s for s in y_key):
                     new_keys = ['yaw_real','yaw_imag']
