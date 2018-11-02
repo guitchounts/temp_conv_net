@@ -59,8 +59,13 @@ def split_data(X, y, test_size, standardize=True,shuffle=False):
         #Z-score "X" inputs. 
         X_train_mean = np.nanmean(X_train, axis=0)
         X_train_std = np.nanstd(X_train, axis=0)
-        X_train = (X_train - X_train_mean) / X_train_std
-        X_test = (X_test - X_train_mean) / X_train_std
+        if 0 in X_train_std:
+            print('Zero values encountered in X_train_std. Zero-centering but not Z-scoring.')
+            X_train = X_train - X_train_mean
+            X_test = X_test - X_train_mean
+        else:
+            X_train = (X_train - X_train_mean) / X_train_std
+            X_test = (X_test - X_train_mean) / X_train_std
 
         #Zero-center outputs
         #y_train_mean = np.mean(y_train, axis=0)
