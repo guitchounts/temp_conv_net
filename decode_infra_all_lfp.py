@@ -240,7 +240,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
 
                 #print('head_signal.shape = ', head_signal.shape)
                 
-                if  any("yaw_abs" in s for s in y_key):
+                if  any("yaw_complex" in s for s in y_key):
                     new_keys = ['yaw_real','yaw_imag']
                     for j in range(2):
                         R2, r = determine_fit(tetrode, head_signal[j], [new_keys[j]], nn_params, chunk_save_dir,model_type=model_type)

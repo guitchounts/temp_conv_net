@@ -4,6 +4,7 @@ from itertools import zip_longest
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import seaborn as sns
+from sklearn import preprocessing
 sns.set_style('white')
 
 def sample_dx_uniformly(derivative,num_points=50000):
@@ -54,7 +55,7 @@ def pass_filter(ephys,freq_range,filt_order = 4,filt_type='bandpass',fs=10.):
 def split_data(X, y, test_size, standardize=True,shuffle=False):
     test_size_idx = int(test_size * X.shape[0])
     X_train, X_test, y_train, y_test = X[:-test_size_idx], X[-test_size_idx:], y[:-test_size_idx], y[-test_size_idx:]
-    
+    # X shape = e.g. (719800, 200, 16)
     if standardize:
         #Z-score "X" inputs. 
         X_train_mean = np.nanmean(X_train, axis=0)
