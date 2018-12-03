@@ -1,11 +1,16 @@
 from scipy import stats, signal
 import numpy as np
-from itertools import zip_longest
+#from itertools import zip_longest
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import seaborn as sns
 from sklearn import preprocessing
 sns.set_style('white')
+
+try:
+    from itertools import zip_longest as zip_longest
+except:
+    from itertools import izip_longest as zip_longest
 
 def sample_dx_uniformly(derivative,num_points=50000):
     ################### sample the dx distribution evenly: ####################

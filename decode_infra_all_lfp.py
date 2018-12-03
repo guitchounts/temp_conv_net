@@ -127,6 +127,8 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
                 idx.append(8)                
             if 'total_acc' in head_signals_int:
                 idx.append(9)
+            if 'yaw_tree' in head_signals_int:
+                idx.append(6)      
     
             
             head_signals = np.vstack([head_signals[:,x] for x in idx ]).T
@@ -229,11 +231,18 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
                     print('complex head_signal shape =', head_signal.shape)
                     head_signal = [head_signal.real, head_signal.imag]
 
+                    custom_loss = 0
                     #y_key = ['yaw_real','yaw_imag']
                     #num_trains = range(2)
                 else:
                     print('Modeling %s Not as complex number' % y_key)
                     head_signal = head_signal
+
+                    if any("yaw_mse" in s for s in y_key):
+                        print('Evaluating %s Model. Custom Loss = 1 ' % y_key)
+                        custom_loss = 1
+                    else:
+                        custom_loss=0
 
                 #for i in num_trains:
                 print('***************** Running Decoding on Chunk %d' % (chunk))
@@ -243,11 +252,20 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
                 if  any("yaw_complex" in s for s in y_key):
                     new_keys = ['yaw_real','yaw_imag']
                     for j in range(2):
-                        R2, r = determine_fit(tetrode, head_signal[j], [new_keys[j]], nn_params, chunk_save_dir,model_type=model_type)
+                        R2, r = determine_fit(tetrode, head_signal[j], [new_keys[j]], nn_params, chunk_save_dir,model_type=model_type,custom_loss=custom_loss)
                         R2r_arr['R2s'].append(R2[0])
                         R2r_arr['rs'].append(r[0])
+                
+                elif  any("yaw_tree" in s for s in y_key):
+                    #new_keys = ['yaw_real','yaw_imag']
+                    #model_type = 'tree'
+                    R2, r = determine_fit(tetrode, np.asarray(head_signal), y_key, nn_params, chunk_save_dir,model_type=model_type,custom_loss=custom_loss)
+                    R2r_arr['R2s'].append(R2[0])
+                    R2r_arr['rs'].append(r[0])
+
+
                 else:
-                    R2, r = determine_fit(tetrode, head_signal, y_key, nn_params, chunk_save_dir,model_type=model_type)
+                    R2, r = determine_fit(tetrode, head_signal, y_key, nn_params, chunk_save_dir,model_type=model_type,custom_loss=custom_loss)
 
                     R2r_arr['R2s'].append(R2[0])
                     R2r_arr['rs'].append(r[0])

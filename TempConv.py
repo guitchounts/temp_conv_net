@@ -6,9 +6,14 @@ from keras.callbacks import EarlyStopping
 from data_helpers import pass_filter, split_data, make_timeseries_instances, timeseries_shuffler,sample_dx_uniformly
 from metrics_helper import do_the_thing
 import keras.backend as K
+
 from sklearn.preprocessing import Normalizer
 from sklearn import linear_model
 from sklearn.externals import joblib
+
+from sklearn.tree import DecisionTreeRegressor
+
+from sklearn.metrics import make_scorer
 
 def modified_mse(y_true, y_pred): #### modified MSE loss function for absolute yaw data (0-360 values wrap around)
     
@@ -16,10 +21,10 @@ def modified_mse(y_true, y_pred): #### modified MSE loss function for absolute y
     #y_true = y_true * y_std + y_mean ### y_train_mean,y_train_std are GLOBALS ??? 
     #y_pred = y_pred * y_std + y_mean
 
-    mod_square =  K.square(K.abs(y_pred - y_true) - 360) ### hack 2.1 = (360 - np.mean(ox)) / np.std(ox) 2.1086953197291871
-    raw_square =  K.square(y_pred - y_true)
-    better = K.minimum(mod_square,raw_square)
-    return K.mean(better,axis= -1)
+    mod_square =  np.square(np.abs(y_pred - y_true) - 360) ### hack 2.1 = (360 - np.mean(ox)) / np.std(ox) 2.1086953197291871
+    raw_square =  np.square(y_pred - y_true)
+    better = np.minimum(mod_square,raw_square)
+    return np.mean(better,axis= -1)
 
 def get_turn_idx(dx):
 
@@ -49,17 +54,32 @@ def get_turn_idx(dx):
   
 #     return model
 
-def make_linear_model(model_type='ridge'):
- 
+def make_linear_model(model_type='ridge',custom_loss=0):
+    
+    if custom_loss:
+        print('Making Model with Custom Loss Function')
+        score = make_scorer(modified_mse, greater_is_better=False)
+    else:
+        score = 'None'
+
     if model_type == 'ridge':
         print('********************************** Making RidgeCV Model **********************************')
         #Declare model
-        model = linear_model.RidgeCV(alphas=[0.1, 1.0, 10.0],normalize=True,fit_intercept=True)
+        model = linear_model.RidgeCV(alphas=[0.1, 1.0, 10.0],normalize=True,fit_intercept=True,scoring=score)
     elif model_type == 'lasso':
 
         print('********************************** Making LassoCV Model **********************************')
         #Declare model
         model = linear_model.LassoCV(n_alphas =5,normalize=True,fit_intercept=True,max_iter=100000,n_jobs=-1) #
+
+    elif model_type == 'tree':
+
+        print('********************************** Making DecisionTreeRegressor Model **********************************')
+        #Declare model
+        model = DecisionTreeRegressor(max_depth=8) #
+  
+
+
   
     return model
 
@@ -167,10 +187,10 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0,model_
         print('\n\nTimeseries ({} samples by {} series):\n'.format(nb_samples, nb_series))
         print('\n\nExample input feature:', X[0], '\n\nExample output labels:', y[0])
     
-    if model_type == 'ridge' or model_type == 'lasso':
+    if model_type == 'ridge' or model_type == 'lasso' or model_type =='tree':
         print(model_type)
         print('Making Linear %s Model' % model_type)
-        model = make_linear_model(model_type=model_type)
+        model = make_linear_model(model_type=model_type,custom_loss=custom_loss)
         
     else:
         print(model_type)
@@ -211,7 +231,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0,model_
         mode='auto'
     )
 
-    if model_type == 'ridge' or model_type == 'lasso':
+    if model_type == 'ridge' or model_type == 'lasso' or model_type =='tree':
         print('Reshaping X_train and X_test and fitting %s model' % model_type)
         #### X's are (time, window, channels), e.g. (13085, 200, 16). Reshape for the linear model:
         X_train = X_train.reshape(X_train.shape[0],(X_train.shape[1]*X_train.shape[2]))
@@ -232,10 +252,10 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0,model_
 
     return model, X_train, X_test, y_train, y_test
 
-def determine_fit(X, y, y_key, nn_params,save_dir, plot_result=True,model_type = 'temp_conv'):
+def determine_fit(X, y, y_key, nn_params,save_dir, plot_result=True,model_type = 'temp_conv',custom_loss = 0):
 
     #if y_key[0].find('yaw') == -1:
-    custom_loss = 0
+    
     #     print('Training on %s, using MSE as loss function' % y_key[0])
     # else:
     #     custom_loss = 1
