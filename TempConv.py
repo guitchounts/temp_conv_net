@@ -60,12 +60,13 @@ def make_linear_model(model_type='ridge',custom_loss=0):
         print('Making Model with Custom Loss Function')
         score = make_scorer(modified_mse, greater_is_better=False)
     else:
-        score = 'None'
+        score = 'mean_squared_error'
 
     if model_type == 'ridge':
         print('********************************** Making RidgeCV Model **********************************')
         #Declare model
-        model = linear_model.RidgeCV(alphas=[0.1, 1.0, 10.0],normalize=True,fit_intercept=True,scoring=score)
+        model = linear_model.RidgeCV(alphas=[0.1, 1.0, 10.0],normalize=True,fit_intercept=True) # ,scoring=score
+        #print('model_type.scoring - ', model_type.score)
     elif model_type == 'lasso':
 
         print('********************************** Making LassoCV Model **********************************')
@@ -209,8 +210,9 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0,model_
     
     X_train, X_test, y_train, y_test = split_data(X, y, 0.5,shuffle=shuffle)
     
-    #y_train = np.ravel(y_train)
-    #y_test = np.ravel(y_test)
+    model_type !='tree':
+        y_train = np.ravel(y_train)
+        y_test = np.ravel(y_test)
 
     # print('###################### resampling y ######################')
 
@@ -274,11 +276,10 @@ def determine_fit(X, y, y_key, nn_params,save_dir, plot_result=True,model_type =
     
     y_test_hat = model.predict(X_test)
     
-    if model_type == 'tree':
-        
+    if model_type == 'tree':   
 
-        y_test_hat = np.rad2deg(np.unwrap([np.angle(np.complex(x+y*1.j),deg=0  ) for x,y in y_test_hat ] ) )
-        y_test = np.rad2deg(np.unwrap([np.angle(np.complex(x+y*1.j),deg=0  ) for x,y in y_test ] ) )
+        y_test_hat = np.rad2deg([np.angle(np.complex(x+y*1.j),deg=0  ) for x,y in y_test_hat ] ) 
+        y_test = np.rad2deg([np.angle(np.complex(x+y*1.j),deg=0  ) for x,y in y_test ]  )
         print('Converting Tree Model y back to degrees. y_test, y_test_hat shapes = ', y_test.shape,y_test_hat.shape)
 
     if model_type == 'ridge' or model_type == 'lasso' or model_type == 'tree':
