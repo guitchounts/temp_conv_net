@@ -209,8 +209,9 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0,model_
     
     X_train, X_test, y_train, y_test = split_data(X, y, 0.5,shuffle=shuffle)
     
-    y_train = np.ravel(y_train)
-    y_test = np.ravel(y_test)
+    #y_train = np.ravel(y_train)
+    #y_test = np.ravel(y_test)
+
     # print('###################### resampling y ######################')
 
     # sampled_dx_idx_train = sample_dx_uniformly(y_train,num_points=5000)
@@ -273,7 +274,14 @@ def determine_fit(X, y, y_key, nn_params,save_dir, plot_result=True,model_type =
     
     y_test_hat = model.predict(X_test)
     
-    if model_type == 'ridge' or model_type == 'lasso':
+    if model_type == 'tree':
+        
+
+        y_test_hat = np.rad2deg(np.unwrap([np.angle(np.complex(x+y*1.j),deg=0  ) for x,y in y_test_hat ] ) )
+        y_test = np.rad2deg(np.unwrap([np.angle(np.complex(x+y*1.j),deg=0  ) for x,y in y_test ] ) )
+        print('Converting Tree Model y back to degrees. y_test, y_test_hat shapes = ', y_test.shape,y_test_hat.shape)
+
+    if model_type == 'ridge' or model_type == 'lasso' or model_type == 'tree':
         # save the model:
         joblib.dump(model, save_dir + str(y_key) + '_%s.pkl' % model_type) 
 

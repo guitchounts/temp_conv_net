@@ -224,7 +224,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
                 
                 print('head_signal shape before compleixfiying  =', head_signal.shape)
 
-                if  any("yaw_complex" in s for s in y_key): # was: for s in head_signals_int
+                if  any("yaw_complex" in s for s in y_key) or any("yaw_tree" in s for s in y_key): # was: for s in head_signals_int
                     print(y_key)
                     print('Modeling YAW as complex number!!')
                     head_signal = np.exp( 1j * np.deg2rad(head_signal) )
@@ -259,7 +259,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
                 elif  any("yaw_tree" in s for s in y_key):
                     #new_keys = ['yaw_real','yaw_imag']
                     #model_type = 'tree'
-                    R2, r = determine_fit(tetrode, np.asarray(head_signal), y_key, nn_params, chunk_save_dir,model_type=model_type,custom_loss=custom_loss)
+                    R2, r = determine_fit(tetrode, np.vstack(head_signal).T, y_key, nn_params, chunk_save_dir,model_type='tree',custom_loss=custom_loss)
                     R2r_arr['R2s'].append(R2[0])
                     R2r_arr['rs'].append(r[0])
 
