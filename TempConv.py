@@ -210,7 +210,7 @@ def evaluate_timeseries(timeseries1, timeseries2, nn_params,custom_loss=0,model_
     
     X_train, X_test, y_train, y_test = split_data(X, y, 0.5,shuffle=shuffle)
     
-    model_type !='tree':
+    if model_type !='tree':
         y_train = np.ravel(y_train)
         y_test = np.ravel(y_test)
 
