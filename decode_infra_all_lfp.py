@@ -16,6 +16,15 @@ from functools import reduce
 # In[9]:
 
 
+def zero_runs(a):  # from link
+    iszero = np.concatenate(([0], np.equal(a, 0).view(np.int8), [0]))
+    absdiff = np.abs(np.diff(iszero))
+    ranges = np.where(absdiff == 1)[0] #.reshape(-1, 2)
+    if len(ranges) > 0:
+        
+        return ranges[0]
+    else:
+        return a.shape[0]
 
 def filter(ephys,freq_range,filt_order = 4,filt_type='bandpass',fs=10.):
 
@@ -30,16 +39,18 @@ def get_head_stop(head_data): ## head_data.shape = e.g. (1000000, 4)
     all_diffs = []
     head_names = range(head_data.shape[1])  #['ox','oy','oz','ax','ay','az']
     for head_name in head_names:
-        diffs = np.where(np.diff(head_data[:,head_name],100) == 0 )[0]
+        diffs = zero_runs(np.diff(head_data[:,head_name]))[0][0] ###np.where(np.diff(head_data[:,head_name],100) == 0 )[0]
         all_diffs.append(diffs)
         print('Getting start/stop coordinates for %s. Shape of diffs = ' % (head_name), diffs.shape)
 
-    all_zeros = reduce(np.intersect1d, (all_diffs))
-    if len(all_zeros) == 0:
-        stop = head_data.shape[0] + 1
-    else:
-        stop = all_zeros[0]
+    #all_zeros = reduce(np.intersect1d, (all_diffs))
+    stop = np.min(all_diffs)
+    # if len(all_zeros) == 0:
+    #     stop = head_data.shape[0] + 1
+    # else:
+    #     stop = all_zeros[0]
 
+    
     return stop
 
 def run_decoding(lfp_path,head_path,nn_params,save_dir):
