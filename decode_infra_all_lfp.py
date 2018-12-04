@@ -128,6 +128,8 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
             if 'total_acc' in head_signals_int:
                 idx.append(9)
             if 'yaw_tree' in head_signals_int:
+                idx.append(6)  
+            if 'yaw_mse' in head_signals_int:
                 idx.append(6)      
     
             
