@@ -32,7 +32,7 @@ def get_head_stop(head_data): ## head_data.shape = e.g. (1000000, 4)
     for head_name in head_names:
         diffs = np.where(np.diff(head_data[:,head_name],100) == 0 )[0]
         all_diffs.append(diffs)
-        print('Getting start/stop coordinates for %s. Shape of diffs = %d' % (head_name,diffs.shape))
+        print('Getting start/stop coordinates for %s. Shape of diffs = ' % (head_name), diffs.shape)
 
     all_zeros = reduce(np.intersect1d, (all_diffs))
     if len(all_zeros) == 0:
