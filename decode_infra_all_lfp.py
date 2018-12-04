@@ -91,11 +91,7 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
     xyz[np.where(np.isnan(xyz))[0]] = 0.
 
 
-    ## lowpass filter:
-    for x in range(6,9):
-        print('Filtering head signal %s' % list(head_signals_h5.keys())[x])
-        head_signals[:,x] = filter(head_signals[:,x],[1],filt_type='lowpass',fs=fs)
-
+    
     
     head_signals = np.hstack([head_signals,np.atleast_2d(xyz).T])
     # dx_neg = np.empty(head_signals[:,3].shape)
@@ -181,6 +177,14 @@ def run_decoding(lfp_path,head_path,nn_params,save_dir):
     tetrodes = tetrodes[:,:,start:stop]
     print('head_signals shape after start,stop = ', head_signals.shape)
     num_chunks = max(1,int(head_signals.shape[0] / two_hour_lim)) ## how many two-hour chunks of decoding can we do using this dataset?
+
+
+    ## lowpass filter:
+    for x in range(head_signals.shape[1]):
+        print('Filtering head signal %s' % head_signals_int[x])
+        head_signals[:,x] = filter(head_signals[:,x],[1],filt_type='lowpass',fs=fs)
+
+
 
     # split tetrodes and head data into chunks:
     chunk_indexes = [two_hour_lim*i for i in range(num_chunks+1)] ## get indexes like [0, 720000] [720000, 1440000] [1440000, 2160000]
