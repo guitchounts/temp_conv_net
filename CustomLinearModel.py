@@ -11,13 +11,14 @@ from metrics_helper import do_the_thing
 from sklearn.preprocessing import Normalizer,StandardScaler
 from sklearn import linear_model
 from sklearn.externals import joblib
+from sklearn.model_selection import KFold
 
 class CustomLinearModel:
     """
     Linear model: Y = XB, fit by minimizing the provided loss_function
     with L2 regularization
     """
-    def __init__(self, loss_function=modified_mse, 
+    def __init__(self, loss_function=None, ## was loss_function=modified_mse
                  X=None, Y=None, sample_weights=None, beta_init=None, 
                  regularization=0.00012):
         self.regularization = regularization
@@ -64,7 +65,11 @@ class CustomLinearModel:
         self.beta = res.x
         self.beta_init = self.beta
 
-from sklearn.model_selection import KFold
+
+
+
+
+
 
 # Used to cross-validate models and identify optimal lambda
 class CustomCrossValidator:
@@ -75,7 +80,7 @@ class CustomCrossValidator:
     """
     def __init__(self, X, Y, ModelClass,
                  sample_weights=None,
-                 loss_function=modified_mse):
+                 loss_function=None):
         
         self.X = X
         self.Y = Y
@@ -185,36 +190,36 @@ def objective_function(beta, X, Y):
 
 
 
-loss_function = modified_mse
+# loss_function = modified_mse
 
-beta_init = np.array([1]*X.shape[1])
-result = minimize(objective_function, beta_init, args=(X,Y),
-                  method='BFGS', options={'maxiter': 500})
+# beta_init = np.array([1]*X.shape[1])
+# result = minimize(objective_function, beta_init, args=(X,Y),
+#                   method='BFGS', options={'maxiter': 500})
 
-# The optimal values for the input parameters are stored
-# in result.x
-beta_hat = result.x
-print(beta_hat)
-
-
-
-# User must specify lambdas over which to search
-lambdas = [0.1, 1.0, 10.0] #  [1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
-
-cross_validator = CustomCrossValidator(
-    X, Y, CustomLinearModel,
-    loss_function=modified_mse
-)
-cross_validator.cross_validate(lambdas, num_folds=5)
+# # The optimal values for the input parameters are stored
+# # in result.x
+# beta_hat = result.x
+# print(beta_hat)
 
 
-lambda_star = cross_validator.lambda_star
-final_model = CustomLinearModel(
-    loss_function=modified_mse,
-    X=X, Y=Y, regularization=lambda_star
-)
-final_model.fit()
-final_model.beta
+
+# # User must specify lambdas over which to search
+# lambdas = [0.1, 1.0, 10.0] #  [1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
+
+# cross_validator = CustomCrossValidator(
+#     X, Y, CustomLinearModel,
+#     loss_function=modified_mse
+# )
+# cross_validator.cross_validate(lambdas, num_folds=5)
+
+
+# lambda_star = cross_validator.lambda_star
+# final_model = CustomLinearModel(
+#     loss_function=modified_mse,
+#     X=X, Y=Y, regularization=lambda_star
+# )
+# final_model.fit()
+# final_model.beta
 
 
 
