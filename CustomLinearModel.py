@@ -13,6 +13,8 @@ from sklearn import linear_model
 from sklearn.externals import joblib
 from sklearn.model_selection import KFold
 
+print('test')
+
 class CustomLinearModel:
     """
     Linear model: Y = XB, fit by minimizing the provided loss_function
